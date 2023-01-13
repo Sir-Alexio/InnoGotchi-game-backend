@@ -8,7 +8,8 @@ namespace InnoGotchi_backend.Models
         public string FarmName { get; set; }
         public int AlivePetsCount { get; set; }
         public int DeadPetsCount { get; set; }
-        public List<Pet> Pets { get; set; }
-        public int UserId{ get; set; }
+        public List<Pet>? Pets { get; set; }
+        public int? UserId{ get; set; }
+
     }
 }
