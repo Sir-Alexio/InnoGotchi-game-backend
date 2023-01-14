@@ -16,7 +16,10 @@ namespace InnoGotchi_backend.Models
         public string ThirstyLevel { get; set; }
         [Required]
         public int HappyDaysCount { get; set; } = 0;
-       
+        public string? Body { get; set; } = "Bodies/body1.svg";
+        public string? Eyes { get; set; }
+        public string? Mouth { get; set; }
+        public string? Nose { get; set; }
         public Pet(string petName)
         {
             this.PetName = petName;

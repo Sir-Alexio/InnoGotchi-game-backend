@@ -1,10 +1,16 @@
-﻿namespace InnoGotchi_backend.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace InnoGotchi_backend.Models
 {
     public class User
     {
+        [Key]
         public int UserId{ get; set; }
+        [Required]
         public string FirstName{ get; set; }
+        [Required]
         public string LastName{ get; set; }
+        [Required]
         public string Email{ get; set; }
         public int? FarmId{ get; set; }
         public List<User>? Colaborators { get; set; }
