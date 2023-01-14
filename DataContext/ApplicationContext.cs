@@ -14,35 +14,12 @@ namespace InnoGotchi_backend.DataContext
         }
         public ApplicationContext()
         {
-            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(@"Server=localhost;Database=InnoGotchi;Trusted_Connection=True");
         }
-        /*
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            Pet dog = new Pet("Dog");
-            Pet cat = new Pet("Cat");
-            Pet monkey = new Pet("Monkey");
-
-            modelBuilder.Entity<Farm>().HasData(new Farm()
-            {
-                FarmId = 1,
-                AlivePetsCount = 1,
-                DeadPetsCount = 1,
-                FarmName = "MyFarm",
-                Pets = new List<Pet> { cat, monkey }
-            }) ;
-
-            modelBuilder.Entity<Farm>().HasData(new User() { 
-                UserId = 1,
-                Email = "mokharev@gmail.com",
-                FirstName = "Alexey",
-                LastName = "mokharev" });
-        }
-        */
+        
     }
 }
