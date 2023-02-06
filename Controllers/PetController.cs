@@ -16,9 +16,9 @@ namespace InnoGotchi_backend.Controllers
             _db = db;
         }
 
-        public IEnumerable<Pet> GetPets()
-        {
-            return _db.Pets.ToList();
-        }
+        //public IEnumerable<Pet> GetPets()
+        //{
+        //    return _db.Pets.ToList();
+        //}
     }
 }
