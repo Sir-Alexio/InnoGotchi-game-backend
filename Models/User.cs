@@ -19,7 +19,7 @@ namespace InnoGotchi_backend.Models
         public List<User>? Colaborators { get; set; }
         public List<Farm>? FarmsColaborators { get; set; }
         [Required]
-        public byte[] PasswordHash { get; set; }
+        public byte[] Password { get; set; }
         [Required]
         public byte[] PasswordSalt { get; set; }
     }

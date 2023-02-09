@@ -1,4 +1,5 @@
-﻿using InnoGotchi_backend.Models;
+﻿using InnoGotchi_backend.DataContext;
+using InnoGotchi_backend.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace InnoGotchi_backend.Controllers
 {
@@ -13,25 +17,43 @@ namespace InnoGotchi_backend.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+        //DELETE this user
         public static User user = new User();
+
+        private ApplicationContext _DbContext;
+
         private readonly IConfiguration _configuration;
 
         public AuthController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
-
-        [HttpPost("registration")]
-        public async Task<ActionResult<User>> Register(UserDto request)
+        
+        [HttpGet("data")]
+        public string GetData()
         {
-            CreatePasswortHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+            Pet myPet1 = new Pet
+            {
+                PetId = 1,
+                PetName = "Jhon",
+                Age = 199
 
-            user.UserName = request.UserName;
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+            };
+            Pet myPet2 = new Pet
+            {
+                PetId = 2,
+                PetName = "Alex",
+                Age = 4000
 
-            return Ok(user);
+            };
+
+            List<Pet> myPets = new List<Pet>();
+            myPets.Add(myPet1);
+            myPets.Add(myPet2);
+
+            return JsonSerializer.Serialize(myPets);    
         }
+    
 
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(UserDto request)
@@ -41,7 +63,7 @@ namespace InnoGotchi_backend.Controllers
                 return BadRequest("User not found!");
             }
 
-            if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            if (!VerifyPasswordHash(request.Password, user.Password, user.PasswordSalt))
             {
                 return BadRequest("Wrong password");
             }
@@ -72,14 +94,7 @@ namespace InnoGotchi_backend.Controllers
 
             return jwt;
         }
-        private void CreatePasswortHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using (HMACSHA512 hmac = new HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }
-        }
+        
         private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
             using (HMACSHA512 hmac = new HMACSHA512(passwordSalt))

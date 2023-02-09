@@ -20,14 +20,6 @@ namespace InnoGotchi_backend.Models
         public string? Eyes { get; set; }
         public string? Mouth { get; set; }
         public string? Nose { get; set; }
-        public Pet(string petName)
-        {
-            this.PetName = petName;
-            Age = 5;
-            HungerLevel = "FULL";
-            ThirstyLevel = "NORMAL";
-            HappyDaysCount = 1;
-        }
-       
+
     }
 }
