@@ -63,10 +63,10 @@ namespace InnoGotchi_backend.Controllers
                 return BadRequest("User not found!");
             }
 
-            if (!VerifyPasswordHash(request.Password, user.Password, user.PasswordSalt))
-            {
-                return BadRequest("Wrong password");
-            }
+            //if (!VerifyPasswordHash(request.Password, user.Password, user.PasswordSalt))
+            //{
+            //    return BadRequest("Wrong password");
+            //}
 
             string token = CreateToken(user);
 

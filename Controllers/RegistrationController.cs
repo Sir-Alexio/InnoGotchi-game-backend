@@ -1,33 +1,53 @@
 ﻿using InnoGotchi_backend.DataContext;
 using InnoGotchi_backend.Models;
+using InnoGotchi_backend.Repositories;
+using InnoGotchi_backend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 
 namespace InnoGotchi_backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RegistrationController : ControllerBase
+    public class RegController : ControllerBase
     {
-        private readonly ApplicationContext _db;
-        public RegistrationController(ApplicationContext db)
+        private readonly IRepositoryManager _repository;
+        public RegController(IRepositoryManager repository)
         {
-            _db = db;
+            _repository = repository;
         }
 
         [HttpPost("registration")]
-        public OkResult Register(User requestUser, string password)
+        public async Task<ActionResult<string>> Register(UserDto userDto)
         {
-            CreatePasswortHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+            User user = MakeUser(userDto);
 
-            requestUser.Password = passwordHash;
-            requestUser.PasswordSalt = passwordSalt;
+            _repository.User.Create(user);
 
-            _db.Users.Add(requestUser);
-            _db.SaveChanges();
+            _repository.Save();
 
             return Ok();
+        }
+
+        private User MakeUser(UserDto dto)
+        {
+            User user = new User();
+
+            CreatePasswortHash(dto.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+            user.UserName = dto.UserName;
+            user.FirstName = dto.FirstName;
+            user.LastName = dto.LastName;
+            user.Email = dto.Email;
+            user.Avatar = dto.Avatar;
+            user.Password = passwordHash;
+            user.PasswordSalt = passwordSalt;
+
+            return user;
+
         }
 
         private void CreatePasswortHash(string password, out byte[] passwordHash, out byte[] passwordSalt)

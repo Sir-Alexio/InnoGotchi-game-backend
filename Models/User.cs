@@ -2,6 +2,7 @@
 
 namespace InnoGotchi_backend.Models
 {
+    [Serializable]
     public class User
     {
         [Key]
