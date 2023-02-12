@@ -32,8 +32,9 @@ namespace InnoGotchi_backend.Controllers
 
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(UserDto dto)
-        {
+        { 
             User? user = _repository.User.GetByCondition(s => s.Email == dto.Email, false).FirstOrDefault();
+
 
             if (user == null)
             {
