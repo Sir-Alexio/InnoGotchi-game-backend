@@ -1,10 +1,13 @@
 ﻿using InnoGotchi_backend.DataContext;
 using InnoGotchi_backend.Models;
+using InnoGotchi_backend.Repositories;
+using InnoGotchi_backend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -17,56 +20,30 @@ namespace InnoGotchi_backend.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        //DELETE this user
-        public static User user = new User();
-
-        private ApplicationContext _DbContext;
-
+        private readonly IRepositoryManager _repository;
         private readonly IConfiguration _configuration;
 
-        public AuthController(IConfiguration configuration)
+        public AuthController(IConfiguration configuration, IRepositoryManager repository)
         {
             _configuration = configuration;
+            _repository = repository;
         }
-        
-        [HttpGet("data")]
-        public string GetData()
-        {
-            Pet myPet1 = new Pet
-            {
-                PetId = 1,
-                PetName = "Jhon",
-                Age = 199
-
-            };
-            Pet myPet2 = new Pet
-            {
-                PetId = 2,
-                PetName = "Alex",
-                Age = 4000
-
-            };
-
-            List<Pet> myPets = new List<Pet>();
-            myPets.Add(myPet1);
-            myPets.Add(myPet2);
-
-            return JsonSerializer.Serialize(myPets);    
-        }
-    
+           
 
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(UserDto request)
+        public async Task<ActionResult<string>> Login(UserDto dto)
         {
-            if (user.UserName != request.UserName)
+            User? user = _repository.User.GetByCondition(s => s.Email == dto.Email, false).FirstOrDefault();
+
+            if (user == null)
             {
                 return BadRequest("User not found!");
             }
 
-            //if (!VerifyPasswordHash(request.Password, user.Password, user.PasswordSalt))
-            //{
-            //    return BadRequest("Wrong password");
-            //}
+            if (!VerifyPasswordHash(dto.Password, user.Password, user.PasswordSalt))
+            {
+                return BadRequest("Wrong password");
+            }
 
             string token = CreateToken(user);
 

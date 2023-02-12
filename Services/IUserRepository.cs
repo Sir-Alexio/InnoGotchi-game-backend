@@ -4,5 +4,6 @@ namespace InnoGotchi_backend.Services
 {
     public interface IUserRepository:IRepositoryBase<User>
     {
+
     }
 }

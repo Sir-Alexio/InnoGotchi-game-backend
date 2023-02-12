@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace InnoGotchi_backend.Models
 {
-    [Serializable]
+    [Index(nameof(Email),IsUnique = true)]
     public class User
     {
         [Key]
