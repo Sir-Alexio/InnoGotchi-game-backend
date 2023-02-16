@@ -24,7 +24,6 @@ namespace InnoGotchi_backend.Repositories
         
         }
 
-        
         public void Save()
         {
             _db.SaveChanges();

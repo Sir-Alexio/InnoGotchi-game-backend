@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -16,71 +18,63 @@ using System.Text.Json.Serialization;
 
 namespace InnoGotchi_backend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/authorization")]
     [ApiController]
     public class AuthController : ControllerBase
     {
+        private readonly IAuthenticationManager _authorizationManager;
         private readonly IRepositoryManager _repository;
-        private readonly IConfiguration _configuration;
-
-        public AuthController(IConfiguration configuration, IRepositoryManager repository)
+        public AuthController(IAuthenticationManager authorizationManager, IRepositoryManager repository)
         {
-            _configuration = configuration;
+            _authorizationManager = authorizationManager;
             _repository = repository;
         }
-           
-
-        [HttpPost("login")]
+        [HttpPost]   
         public async Task<ActionResult<string>> Login(UserDto dto)
-        { 
-            User? user = _repository.User.GetByCondition(s => s.Email == dto.Email, false).FirstOrDefault();
-
-
-            if (user == null)
+        {
+            if (!_authorizationManager.ValidateUser(dto).Result)
             {
-                return BadRequest("User not found!");
+                return BadRequest("Wrong email of password");
             }
 
-            if (!VerifyPasswordHash(dto.Password, user.Password, user.PasswordSalt))
-            {
-                return BadRequest("Wrong password");
-            }
-
-            string token = CreateToken(user);
-
+            string token = _authorizationManager.CreateToken().Result;
+            
             return Ok(token);
         }
-
-        private string CreateToken(User user)
+        [HttpGet("user/{token}")]
+        public async Task<ActionResult<string>> GetCurrentUser(string token)
         {
-            List<Claim> claims = new List<Claim>
+            UserDto dto = new UserDto();
+
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+
+            JwtSecurityToken jwtToken = tokenHandler.ReadJwtToken(token);
+
+            if (jwtToken == null)
             {
-                new Claim(ClaimTypes.Name, user.UserName),
-            };
-
-            SymmetricSecurityKey key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
-                _configuration.GetSection("AppSettings:Token").Value));
-
-            SigningCredentials creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-            JwtSecurityToken token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.Now.AddDays(1),
-                signingCredentials: creds);
-
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return jwt;
-        }
-        
-        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
-        {
-            using (HMACSHA512 hmac = new HMACSHA512(passwordSalt))
-            {
-                var computeHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                
-                return computeHash.SequenceEqual(passwordHash);
+                return BadRequest("User is not authorize!!!");
             }
+
+            IEnumerable<Claim> claims = jwtToken.Claims;
+
+            string? userEmail = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            
+            User? currentUser = _repository.User.GetUserByEmail(userEmail);
+
+            if (currentUser == null)
+            {
+                return BadRequest("User not found");
+            }
+
+            dto.UserName = currentUser.UserName;
+            dto.FirstName = currentUser.FirstName;
+            dto.LastName = currentUser.LastName;
+            dto.Avatar = currentUser.Avatar;
+            dto.Email = currentUser.Email;
+            dto.Password = "password";
+
+            return Ok(JsonSerializer.Serialize(dto));
         }
+
     }
 }

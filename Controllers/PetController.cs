@@ -2,23 +2,18 @@
 using Microsoft.AspNetCore.Mvc;
 using InnoGotchi_backend.DataContext;
 using InnoGotchi_backend.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InnoGotchi_backend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/pet")]
     [ApiController]
     public class PetController : ControllerBase
     {
-        private ApplicationContext _db;
-
-        public PetController(ApplicationContext db)
+        [HttpGet,Authorize]
+        public async Task<ActionResult<string>> GetPet()
         {
-            _db = db;
+            return Ok("Hello from api");
         }
-
-        //public IEnumerable<Pet> GetPets()
-        //{
-        //    return _db.Pets.ToList();
-        //}
     }
 }

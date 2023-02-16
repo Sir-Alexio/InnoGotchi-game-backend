@@ -10,7 +10,7 @@ using System.Text.Json;
 
 namespace InnoGotchi_backend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/registration")]
     [ApiController]
     public class RegController : ControllerBase
     {
@@ -20,7 +20,7 @@ namespace InnoGotchi_backend.Controllers
             _repository = repository;
         }
 
-        [HttpPost("registration")]
+        [HttpPost]
         public async Task<ActionResult<string>> Register(UserDto userDto)
         {
             User user = MakeUser(userDto);
