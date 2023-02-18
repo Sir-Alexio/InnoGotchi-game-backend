@@ -15,6 +15,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InnoGotchi_backend.Controllers
 {
@@ -41,7 +42,9 @@ namespace InnoGotchi_backend.Controllers
             
             return Ok(token);
         }
+
         [HttpGet("user/{token}")]
+        //[Authorize]
         public async Task<ActionResult<string>> GetCurrentUser(string token)
         {
             UserDto dto = new UserDto();
@@ -75,6 +78,8 @@ namespace InnoGotchi_backend.Controllers
 
             return Ok(JsonSerializer.Serialize(dto));
         }
+
+       
 
     }
 }

@@ -15,6 +15,7 @@ namespace InnoGotchi_backend.Controllers
     public class RegController : ControllerBase
     {
         private readonly IRepositoryManager _repository;
+        
         public RegController(IRepositoryManager repository)
         {
             _repository = repository;
@@ -58,6 +59,8 @@ namespace InnoGotchi_backend.Controllers
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
         }
+        
+
 
     }
 }
