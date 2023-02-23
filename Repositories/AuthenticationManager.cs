@@ -1,6 +1,8 @@
 ﻿using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -8,7 +10,7 @@ using System.Text;
 
 namespace InnoGotchi_backend.Repositories
 {
-    public class AuthenticationManager : IAuthenticationManager
+    public class AuthenticationManager :Controller, IAuthenticationManager
     {
         private readonly IRepositoryManager _repository;
         private readonly IConfiguration _configuration;
@@ -49,6 +51,7 @@ namespace InnoGotchi_backend.Repositories
             {
                 new Claim(ClaimTypes.Email, _user.Email)
             };
+
 
             return claims;
         }

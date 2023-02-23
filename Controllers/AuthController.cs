@@ -16,6 +16,9 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Http;
+using Microsoft.AspNetCore.Authentication;
+using AutoMapper;
 
 namespace InnoGotchi_backend.Controllers
 {
@@ -25,10 +28,12 @@ namespace InnoGotchi_backend.Controllers
     {
         private readonly IAuthenticationManager _authorizationManager;
         private readonly IRepositoryManager _repository;
-        public AuthController(IAuthenticationManager authorizationManager, IRepositoryManager repository)
+        private readonly IMapper _mapper;
+        public AuthController(IAuthenticationManager authorizationManager, IRepositoryManager repository, IMapper mapper)
         {
             _authorizationManager = authorizationManager;
             _repository = repository;
+            _mapper = mapper;
         }
         [HttpPost]   
         public async Task<ActionResult<string>> Login(UserDto dto)
@@ -39,42 +44,26 @@ namespace InnoGotchi_backend.Controllers
             }
 
             string token = _authorizationManager.CreateToken().Result;
-            
+
             return Ok(token);
         }
 
-        [HttpGet("user/{token}")]
-        //[Authorize]
-        public async Task<ActionResult<string>> GetCurrentUser(string token)
+        [HttpGet("user")]
+        [Authorize]
+        public async Task<ActionResult<string>> GetCurrentUser()
         {
             UserDto dto = new UserDto();
 
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            string? email = User.FindFirst(ClaimTypes.Email)?.Value;
 
-            JwtSecurityToken jwtToken = tokenHandler.ReadJwtToken(token);
-
-            if (jwtToken == null)
-            {
-                return BadRequest("User is not authorize!!!");
-            }
-
-            IEnumerable<Claim> claims = jwtToken.Claims;
-
-            string? userEmail = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
-            
-            User? currentUser = _repository.User.GetUserByEmail(userEmail);
+            User? currentUser = _repository.User.GetUserByEmail(email);
 
             if (currentUser == null)
             {
                 return BadRequest("User not found");
             }
 
-            dto.UserName = currentUser.UserName;
-            dto.FirstName = currentUser.FirstName;
-            dto.LastName = currentUser.LastName;
-            dto.Avatar = currentUser.Avatar;
-            dto.Email = currentUser.Email;
-            dto.Password = "password";
+            dto = _mapper.Map<UserDto>(currentUser);
 
             return Ok(JsonSerializer.Serialize(dto));
         }

@@ -1,4 +1,6 @@
+using AutoMapper;
 using InnoGotchi_backend.DataContext;
+using InnoGotchi_backend.Mapping;
 using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Repositories;
 using InnoGotchi_backend.Services;
@@ -33,6 +35,12 @@ builder.Services.AddSwaggerGen(options =>
 
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
+var config = new MapperConfiguration(cfg =>
+{
+    // Create a mapping from User to UserDto
+    cfg.CreateMap<User, UserDto>();
+});
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 //builder.Services.AddAuthentication(
 //    JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => 
@@ -68,6 +76,8 @@ builder.Services.AddAuthentication(opt => {
      };
  });
 //end of JWT
+//Delete
+builder.Services.AddAuthentication().AddCookie("Cookies");
 
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")
