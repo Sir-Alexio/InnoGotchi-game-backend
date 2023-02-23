@@ -1,9 +1,12 @@
-﻿using InnoGotchi_backend.DataContext;
+﻿using AutoMapper;
+using InnoGotchi_backend.DataContext;
 using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Repositories;
 using InnoGotchi_backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -15,10 +18,14 @@ namespace InnoGotchi_backend.Controllers
     public class RegController : ControllerBase
     {
         private readonly IRepositoryManager _repository;
-        
-        public RegController(IRepositoryManager repository)
+        private readonly IMapper _mapper;
+        private readonly IAuthenticationManager _authenticationManager;
+
+        public RegController(IRepositoryManager repository, IMapper mapper, IAuthenticationManager authenticationManager)
         {
             _repository = repository;
+            _mapper = mapper;
+            _authenticationManager = authenticationManager;
         }
 
         [HttpPost]
@@ -28,6 +35,37 @@ namespace InnoGotchi_backend.Controllers
 
             _repository.User.Create(user);
 
+            _repository.Save();
+
+            return Ok();
+        }
+
+        [HttpPatch]
+        [Authorize]
+
+        public async Task<ActionResult<string>> ChangePassword(ChangePasswordModel changePassword)
+        {
+            string? email = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            User? currentUser = _repository.User.GetUserByEmail(email);
+
+            UserDto dto = new UserDto();
+
+            dto.Password = changePassword.CurrentPassword;
+            dto.Email = email;
+
+            if (!_authenticationManager.ValidateUser(dto).Result)
+            {
+                return BadRequest("Wrong password");
+            }
+
+            CreatePasswortHash(changePassword.NewPassword, out byte[] hash, out byte[] salt);
+
+            currentUser.Password = hash;
+
+            currentUser.PasswordSalt = salt;
+
+            _repository.User.Update(currentUser);
             _repository.Save();
 
             return Ok();

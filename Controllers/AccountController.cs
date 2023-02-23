@@ -4,6 +4,7 @@ using InnoGotchi_backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace InnoGotchi_backend.Controllers
@@ -14,10 +15,12 @@ namespace InnoGotchi_backend.Controllers
     {
         private readonly IRepositoryManager _repository;
         private readonly IMapper _mapper;
-        public AccountController(IRepositoryManager repository, IMapper mapper)
+        private readonly IAuthenticationManager _authenticationManager;
+        public AccountController(IRepositoryManager repository, IMapper mapper, IAuthenticationManager authenticationManager)
         {
             _repository = repository;
             _mapper = mapper;
+            _authenticationManager = authenticationManager;
         }
 
         [HttpPatch]
@@ -39,6 +42,7 @@ namespace InnoGotchi_backend.Controllers
 
             return Ok(JsonSerializer.Serialize(dto));
         }
+
 
     }
 }
