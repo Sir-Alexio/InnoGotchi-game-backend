@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Net.Http;
 using Microsoft.AspNetCore.Authentication;
 using AutoMapper;
+using InnoGotchi_backend.Models.Dto;
 
 namespace InnoGotchi_backend.Controllers
 {

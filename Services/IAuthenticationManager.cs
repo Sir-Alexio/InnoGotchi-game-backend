@@ -1,4 +1,4 @@
-﻿using InnoGotchi_backend.Models;
+﻿using InnoGotchi_backend.Models.Dto;
 
 namespace InnoGotchi_backend.Services
 {

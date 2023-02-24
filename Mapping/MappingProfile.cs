@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using InnoGotchi_backend.Models;
+using InnoGotchi_backend.Models.Dto;
 
 namespace InnoGotchi_backend.Mapping
 {
@@ -9,6 +10,8 @@ namespace InnoGotchi_backend.Mapping
         {
             CreateMap<User, UserDto>();
             CreateMap<UserDto, User>();
+            CreateMap<Farm, FarmDto>();
+            CreateMap<FarmDto, Farm>();
         }
     }
 }

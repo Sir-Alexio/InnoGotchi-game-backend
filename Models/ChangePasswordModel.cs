@@ -1,4 +1,6 @@
-﻿namespace InnoGotchi_backend.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace InnoGotchi_backend.Models
 {
     public class ChangePasswordModel
     {

@@ -1,4 +1,5 @@
 ﻿using InnoGotchi_backend.Models;
+using InnoGotchi_backend.Models.Dto;
 using InnoGotchi_backend.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;

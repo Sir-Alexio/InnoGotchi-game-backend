@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace InnoGotchi_backend.Models
+namespace InnoGotchi_backend.Models.Dto
 {
     public class UserDto
     {
