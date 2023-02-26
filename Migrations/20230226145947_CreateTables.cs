@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace InnoGotchi_backend.Migrations
 {
-    public partial class update_entity : Migration
+    public partial class CreateTables : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -14,20 +15,17 @@ namespace InnoGotchi_backend.Migrations
                 {
                     UserId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FarmId = table.Column<int>(type: "int", nullable: true),
-                    UserId1 = table.Column<int>(type: "int", nullable: true)
+                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Avatar = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Password = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    PasswordSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.UserId);
-                    table.ForeignKey(
-                        name: "FK_Users_Users_UserId1",
-                        column: x => x.UserId1,
-                        principalTable: "Users",
-                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateTable(
@@ -36,10 +34,10 @@ namespace InnoGotchi_backend.Migrations
                 {
                     FarmId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FarmName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FarmName = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     AlivePetsCount = table.Column<int>(type: "int", nullable: false),
                     DeadPetsCount = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: true)
+                    UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -47,6 +45,30 @@ namespace InnoGotchi_backend.Migrations
                     table.ForeignKey(
                         name: "FK_Farms_Users_UserId",
                         column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserColab",
+                columns: table => new
+                {
+                    IAmColaboratorUserId = table.Column<int>(type: "int", nullable: false),
+                    MyColaboratorsUserId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserColab", x => new { x.IAmColaboratorUserId, x.MyColaboratorsUserId });
+                    table.ForeignKey(
+                        name: "FK_UserColab_Users_IAmColaboratorUserId",
+                        column: x => x.IAmColaboratorUserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserColab_Users_MyColaboratorsUserId",
+                        column: x => x.MyColaboratorsUserId,
                         principalTable: "Users",
                         principalColumn: "UserId");
                 });
@@ -62,7 +84,11 @@ namespace InnoGotchi_backend.Migrations
                     HungerLevel = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ThirstyLevel = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     HappyDaysCount = table.Column<int>(type: "int", nullable: false),
-                    FarmId = table.Column<int>(type: "int", nullable: true)
+                    Body = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Eyes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Mouth = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Nose = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FarmId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -71,13 +97,21 @@ namespace InnoGotchi_backend.Migrations
                         name: "FK_Pets_Farms_FarmId",
                         column: x => x.FarmId,
                         principalTable: "Farms",
-                        principalColumn: "FarmId");
+                        principalColumn: "FarmId",
+                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Farms_FarmName",
+                table: "Farms",
+                column: "FarmName",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Farms_UserId",
                 table: "Farms",
-                column: "UserId");
+                column: "UserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Pets_FarmId",
@@ -85,15 +119,24 @@ namespace InnoGotchi_backend.Migrations
                 column: "FarmId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_UserId1",
+                name: "IX_UserColab_MyColaboratorsUserId",
+                table: "UserColab",
+                column: "MyColaboratorsUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
                 table: "Users",
-                column: "UserId1");
+                column: "Email",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "Pets");
+
+            migrationBuilder.DropTable(
+                name: "UserColab");
 
             migrationBuilder.DropTable(
                 name: "Farms");

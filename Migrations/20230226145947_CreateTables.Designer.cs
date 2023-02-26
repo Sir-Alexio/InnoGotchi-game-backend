@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InnoGotchi_backend.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230212093827_AddIndexesToUser")]
-    partial class AddIndexesToUser
+    [Migration("20230226145947_CreateTables")]
+    partial class CreateTables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -40,14 +40,18 @@ namespace InnoGotchi_backend.Migrations
 
                     b.Property<string>("FarmName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("FarmId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("FarmName")
+                        .IsUnique();
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Farms");
                 });
@@ -69,7 +73,7 @@ namespace InnoGotchi_backend.Migrations
                     b.Property<string>("Eyes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("FarmId")
+                    b.Property<int>("FarmId")
                         .HasColumnType("int");
 
                     b.Property<int>("HappyDaysCount")
@@ -115,9 +119,6 @@ namespace InnoGotchi_backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("FarmId")
-                        .HasColumnType("int");
-
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -134,45 +135,68 @@ namespace InnoGotchi_backend.Migrations
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<int?>("UserId1")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
 
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.HasIndex("UserId1");
-
-                    b.HasIndex("UserName")
-                        .IsUnique();
-
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("UserUser", b =>
+                {
+                    b.Property<int>("IAmColaboratorUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MyColaboratorsUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("IAmColaboratorUserId", "MyColaboratorsUserId");
+
+                    b.HasIndex("MyColaboratorsUserId");
+
+                    b.ToTable("UserColab", (string)null);
                 });
 
             modelBuilder.Entity("InnoGotchi_backend.Models.Farm", b =>
                 {
-                    b.HasOne("InnoGotchi_backend.Models.User", null)
-                        .WithMany("FarmsColaborators")
-                        .HasForeignKey("UserId");
+                    b.HasOne("InnoGotchi_backend.Models.User", "MyUser")
+                        .WithOne("MyFarm")
+                        .HasForeignKey("InnoGotchi_backend.Models.Farm", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MyUser");
                 });
 
             modelBuilder.Entity("InnoGotchi_backend.Models.Pet", b =>
                 {
-                    b.HasOne("InnoGotchi_backend.Models.Farm", null)
+                    b.HasOne("InnoGotchi_backend.Models.Farm", "Farm")
                         .WithMany("Pets")
-                        .HasForeignKey("FarmId");
+                        .HasForeignKey("FarmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Farm");
                 });
 
-            modelBuilder.Entity("InnoGotchi_backend.Models.User", b =>
+            modelBuilder.Entity("UserUser", b =>
                 {
                     b.HasOne("InnoGotchi_backend.Models.User", null)
-                        .WithMany("Colaborators")
-                        .HasForeignKey("UserId1");
+                        .WithMany()
+                        .HasForeignKey("IAmColaboratorUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InnoGotchi_backend.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("MyColaboratorsUserId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("InnoGotchi_backend.Models.Farm", b =>
@@ -182,9 +206,7 @@ namespace InnoGotchi_backend.Migrations
 
             modelBuilder.Entity("InnoGotchi_backend.Models.User", b =>
                 {
-                    b.Navigation("Colaborators");
-
-                    b.Navigation("FarmsColaborators");
+                    b.Navigation("MyFarm");
                 });
 #pragma warning restore 612, 618
         }

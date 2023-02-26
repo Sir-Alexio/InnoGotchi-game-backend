@@ -34,18 +34,15 @@ namespace InnoGotchi_backend.Controllers
                 return BadRequest("User is not authorize");
             }
 
-            farmDto.UserId = curentUser.UserId;
-
-            //Farm farm = _mapper.Map<Farm>(farmDto);
             Farm? farm = new Farm();
 
             farm.FarmName = farmDto.FarmName;
-            
+
+            farm.MyUser = curentUser;
+
+            curentUser.MyFarm = farm;
+
             _repository.Farm.Create(farm);
-
-            farm = _repository.Farm.GetByCondition(x => x.FarmName == farmDto.FarmName, false).FirstOrDefault();
-
-            curentUser.FarmId = farm.FarmId;
 
             _repository.User.Update(curentUser);
 

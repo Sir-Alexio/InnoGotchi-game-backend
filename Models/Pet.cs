@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace InnoGotchi_backend.Models
 {
@@ -20,6 +21,9 @@ namespace InnoGotchi_backend.Models
         public string? Eyes { get; set; }
         public string? Mouth { get; set; }
         public string? Nose { get; set; }
+        [Required]
+        public int FarmId { get; set; }
+        public virtual Farm Farm { get; set; }
 
     }
 }

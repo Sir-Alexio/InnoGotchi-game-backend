@@ -3,23 +3,23 @@ using System.ComponentModel.DataAnnotations;
 
 namespace InnoGotchi_backend.Models
 {
-    [Index(nameof(Email),IsUnique = true)]
+    [Index(nameof(Email), IsUnique = true)]
     public class User
     {
         [Key]
-        public int UserId{ get; set; }
+        public int UserId { get; set; }
         [Required]
-        public string UserName{ get; set; }
+        public string UserName { get; set; }
         [Required]
-        public string FirstName{ get; set; }
+        public string FirstName { get; set; }
         [Required]
-        public string LastName{ get; set; }
+        public string LastName { get; set; }
         [Required]
-        public string Email{ get; set; }
+        public string Email { get; set; }
         public string? Avatar { get; set; }
-        public int? FarmId{ get; set; }
-        public List<User>? Colaborators { get; set; }
-        public List<Farm>? FarmsColaborators { get; set; }
+        public virtual Farm? MyFarm { get; set; }
+        public ICollection<User>? MyColaborators { get; set; }
+        public ICollection<User>? IAmColaborator { get; set; }
         [Required]
         public byte[] Password { get; set; }
         [Required]
