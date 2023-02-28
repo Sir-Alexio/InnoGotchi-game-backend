@@ -8,6 +8,6 @@ namespace InnoGotchi_backend.Models.Dto
         public string FarmName { get; set; } = string.Empty;
         public int AlivePetsCount { get; set; } = 0;
         public int DeadPetsCount { get; set; } = 0;
-        public int? UserId { get; set; }
+        //public int? UserId { get; set; }
     }
 }

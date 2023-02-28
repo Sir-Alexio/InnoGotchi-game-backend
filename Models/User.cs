@@ -17,12 +17,12 @@ namespace InnoGotchi_backend.Models
         [Required]
         public string Email { get; set; }
         public string? Avatar { get; set; }
-        public virtual Farm? MyFarm { get; set; }
         public ICollection<User>? MyColaborators { get; set; }
         public ICollection<User>? IAmColaborator { get; set; }
         [Required]
         public byte[] Password { get; set; }
         [Required]
         public byte[] PasswordSalt { get; set; }
+        public virtual Farm? MyFarm { get; set; }
     }
 }

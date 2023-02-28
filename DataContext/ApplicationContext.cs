@@ -25,15 +25,18 @@ namespace InnoGotchi_backend.DataContext
 
         protected override void OnModelCreating(ModelBuilder model)
         {
-            model.Entity<User>().HasOne(u => u.MyFarm)
-                .WithOne(a => a.MyUser)
-                .HasForeignKey<Farm>(a => a.UserId);
+            model.Entity<User>()
+                .HasOne(u => u.MyFarm)
+                .WithOne(f=>f.MyUser)
+                .HasForeignKey<Farm>(f => f.UserId);
 
-            model.Entity<Pet>().HasOne(e => e.Farm)
+            model.Entity<Pet>()
+                .HasOne(e => e.Farm)
                 .WithMany(d => d.Pets)
                 .HasForeignKey(e => e.FarmId);
 
-            model.Entity<User>().HasMany(s => s.MyColaborators)
+            model.Entity<User>()
+                .HasMany(s => s.MyColaborators)
                 .WithMany(c => c.IAmColaborator)
                 .UsingEntity(j => j.ToTable("UserColab"));
         }

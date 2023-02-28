@@ -16,8 +16,8 @@ namespace InnoGotchi_backend.Models
         [Required]
         public int DeadPetsCount { get; set; }
         public virtual ICollection<Pet>? Pets { get; set; }
-        public virtual User MyUser { get; set; }
         public int UserId { get; set; }
+        public virtual User? MyUser { get; set; }
 
     }
 }
