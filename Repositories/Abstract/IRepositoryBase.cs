@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 
-namespace InnoGotchi_backend.Services
+namespace InnoGotchi_backend.Repositories.Abstract
 {
     public interface IRepositoryBase<T>
     {

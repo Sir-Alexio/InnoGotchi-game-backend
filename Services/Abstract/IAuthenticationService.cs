@@ -1,8 +1,8 @@
 ﻿using InnoGotchi_backend.Models.Dto;
 
-namespace InnoGotchi_backend.Services
+namespace InnoGotchi_backend.Services.Abstract
 {
-    public interface IAuthenticationManager
+    public interface IAuthenticationService
     {
         Task<bool> ValidateUser(UserDto dto);
         public Task<string> CreateToken();

@@ -4,7 +4,8 @@ using InnoGotchi_backend.Mapping;
 using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Models.Dto;
 using InnoGotchi_backend.Repositories;
-using InnoGotchi_backend.Services;
+using InnoGotchi_backend.Repositories.Abstract;
+using InnoGotchi_backend.Services.Abstract;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,12 +13,16 @@ using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Filters;
 using System;
 using System.Text;
+using InnoGotchi_backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
-builder.Services.AddScoped<IAuthenticationManager, AuthenticationManager>();
+
+builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers();

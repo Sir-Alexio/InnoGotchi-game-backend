@@ -1,7 +1,6 @@
 ﻿using InnoGotchi_backend.DataContext;
 using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Repositories;
-using InnoGotchi_backend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +19,8 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Authentication;
 using AutoMapper;
 using InnoGotchi_backend.Models.Dto;
+using InnoGotchi_backend.Services.Abstract;
+using InnoGotchi_backend.Repositories.Abstract;
 
 namespace InnoGotchi_backend.Controllers
 {
@@ -27,10 +28,11 @@ namespace InnoGotchi_backend.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthenticationManager _authorizationManager;
+        private readonly Services.Abstract.IAuthenticationService _authorizationManager;
         private readonly IRepositoryManager _repository;
+        
         private readonly IMapper _mapper;
-        public AuthController(IAuthenticationManager authorizationManager, IRepositoryManager repository, IMapper mapper)
+        public AuthController(Services.Abstract.IAuthenticationService authorizationManager, IRepositoryManager repository, IMapper mapper)
         {
             _authorizationManager = authorizationManager;
             _repository = repository;

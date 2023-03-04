@@ -1,6 +1,8 @@
 ﻿using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Models.Dto;
-using InnoGotchi_backend.Services;
+using InnoGotchi_backend.Models.Enums;
+using InnoGotchi_backend.Repositories.Abstract;
+using InnoGotchi_backend.Services.Abstract;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,20 +11,20 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace InnoGotchi_backend.Repositories
+namespace InnoGotchi_backend.Services
 {
-    public class AuthenticationManager :Controller, IAuthenticationManager
+    public class AuthenticationService : Controller, Abstract.IAuthenticationService
     {
         private readonly IRepositoryManager _repository;
         private readonly IConfiguration _configuration;
 
         private User? _user;
-        public AuthenticationManager(IRepositoryManager repository, IConfiguration configuration)
+        public AuthenticationService(IRepositoryManager repository, IConfiguration configuration)
         {
             _repository = repository;
             _configuration = configuration;
         }
-    
+
         public async Task<string> CreateToken()
         {
             var signingCredentials = GetSigningCredentials();
@@ -35,7 +37,7 @@ namespace InnoGotchi_backend.Repositories
         {
             _user = _repository.User.GetUserByEmail(dto.Email);
 
-            return (_user != null && _repository.User.VerifyPasswordHash(dto.Password, _user.Password, _user.PasswordSalt));
+            return _user != null && _repository.User.VerifyPasswordHash(dto.Password, _user.Password, _user.PasswordSalt);
         }
 
         private SigningCredentials GetSigningCredentials()
@@ -52,7 +54,6 @@ namespace InnoGotchi_backend.Repositories
             {
                 new Claim(ClaimTypes.Email, _user.Email)
             };
-
 
             return claims;
         }

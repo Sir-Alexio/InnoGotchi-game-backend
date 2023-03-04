@@ -1,6 +1,6 @@
 ﻿using InnoGotchi_backend.Repositories;
 
-namespace InnoGotchi_backend.Services
+namespace InnoGotchi_backend.Repositories.Abstract
 {
     public interface IRepositoryManager
     {

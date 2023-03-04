@@ -1,5 +1,5 @@
 ﻿using InnoGotchi_backend.DataContext;
-using InnoGotchi_backend.Services;
+using InnoGotchi_backend.Repositories.Abstract;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
