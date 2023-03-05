@@ -18,7 +18,7 @@ namespace InnoGotchi_backend.Services
         private readonly IRepositoryManager _repository;
         private readonly IConfiguration _configuration;
 
-        private User? _user;
+        private static User? _user;
         public AuthenticationService(IRepositoryManager repository, IConfiguration configuration)
         {
             _repository = repository;
@@ -33,11 +33,11 @@ namespace InnoGotchi_backend.Services
             return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
         }
 
-        public async Task<bool> ValidateUser(UserDto dto)
+        public async Task<bool> ValidateUser(User currentUser)
         {
-            _user = _repository.User.GetUserByEmail(dto.Email);
+            _user = _repository.User.GetUserByEmail(currentUser.Email);
 
-            return _user != null && _repository.User.VerifyPasswordHash(dto.Password, _user.Password, _user.PasswordSalt);
+            return _user != null && _repository.User.VerifyPasswordHash(Encoding.UTF8.GetString(currentUser.Password), _user.Password, _user.PasswordSalt);
         }
 
         private SigningCredentials GetSigningCredentials()

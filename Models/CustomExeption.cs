@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InnoGotchi_backend.Models.Enums;
+using System;
 namespace InnoGotchi_backend.Models
 {
     public class CustomExeption: Exception
@@ -6,6 +7,6 @@ namespace InnoGotchi_backend.Models
         public CustomExeption(string message):base(message)
         {
         }
-        public int StatusCode { get; set; }
+        public StatusCode StatusCode { get; set; }
     }
 }

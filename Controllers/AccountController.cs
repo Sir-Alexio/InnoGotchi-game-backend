@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Models.Dto;
+using InnoGotchi_backend.Models.Enums;
 using InnoGotchi_backend.Repositories.Abstract;
 using InnoGotchi_backend.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
@@ -10,21 +11,19 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
 
+
 namespace InnoGotchi_backend.Controllers
 {
     [Route("api/account")]
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly IRepositoryManager _repository;
+
         private readonly IUserService _userService;
-        private readonly IMapper _mapper;
-        private readonly IAuthenticationService _authenticationService;
-        public AccountController(IRepositoryManager repository, IMapper mapper, IAuthenticationService authenticationService, IUserService userService)
+
+        public AccountController( IUserService userService)
         {
-            _repository = repository;
-            _mapper = mapper;
-            _authenticationService = authenticationService;
+
             _userService = userService;
         }
 
@@ -55,7 +54,17 @@ namespace InnoGotchi_backend.Controllers
         {
             string email = User.FindFirst(ClaimTypes.Email).Value;
 
-            await _userService.ChangePassword(changePassword, email);
+            StatusCode status = await _userService.ChangePassword(changePassword, email);
+
+            switch (status)
+            {
+                case Models.Enums.StatusCode.WrongPassword:
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Wrong password") { StatusCode = Models.Enums.StatusCode.WrongPassword }));
+                    break;
+                case Models.Enums.StatusCode.UpdateFailed:
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Can not update database") { StatusCode = Models.Enums.StatusCode.WrongPassword }));
+                    break;
+            }
 
             return Ok();
         }

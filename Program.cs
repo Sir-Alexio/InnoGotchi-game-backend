@@ -41,23 +41,15 @@ builder.Services.AddSwaggerGen(options =>
 
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
-var config = new MapperConfiguration(cfg =>
-{
-    // Create a mapping from User to UserDto
-    cfg.CreateMap<User, UserDto>();
-});
-builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-//builder.Services.AddAuthentication(
-//    JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => 
-//    options.TokenValidationParameters = new TokenValidationParameters
-//    {
-//        ValidateIssuerSigningKey = true,
-//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-//            builder.Configuration.GetSection("AppSettings:Token").Value)),
-//        ValidateIssuer = false,
-//        ValidateAudience = false
-//    });
+//var config = new MapperConfiguration(cfg =>
+//{
+//    // Create a mapping from User to UserDto
+//    cfg.CreateMap<User, UserDto>();
+//    cfg.CreateMap<UserDto, User>();
+//});
+
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 //JWT from book
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -82,6 +74,7 @@ builder.Services.AddAuthentication(opt => {
      };
  });
 //end of JWT
+
 //Delete
 builder.Services.AddAuthentication().AddCookie("Cookies");
 

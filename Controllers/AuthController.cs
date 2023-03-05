@@ -41,7 +41,11 @@ namespace InnoGotchi_backend.Controllers
         [HttpPost]   
         public async Task<ActionResult<string>> Login(UserDto dto)
         {
-            if (!_authorizationManager.ValidateUser(dto).Result)
+            User user = new User();
+            user.Email = dto.Email;
+            user.Password = Encoding.UTF8.GetBytes(dto.Password);
+
+            if (!_authorizationManager.ValidateUser(user).Result)
             {
                 return BadRequest("Wrong email of password");
             }

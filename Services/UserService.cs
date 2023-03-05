@@ -1,9 +1,12 @@
-﻿using InnoGotchi_backend.Models;
+﻿using AutoMapper;
+using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Models.Dto;
 using InnoGotchi_backend.Models.Enums;
 using InnoGotchi_backend.Repositories.Abstract;
 using InnoGotchi_backend.Services.Abstract;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace InnoGotchi_backend.Services
 {
@@ -11,23 +14,27 @@ namespace InnoGotchi_backend.Services
     {
         private readonly IRepositoryManager _repository;
         private readonly IAuthenticationService _authentication;
-        public UserService(IRepositoryManager repository, IAuthenticationService authentication)
+        private readonly IMapper _mapper;
+        public UserService(IRepositoryManager repository, IAuthenticationService authentication, IMapper mapper)
         {
             _repository = repository;
             _authentication = authentication;
+            _mapper = mapper;
         }
 
         public async Task<bool> UpdateUser(UserDto dto)
         {
             User? user = _repository.User.GetUserByEmail(dto.Email);
 
-            user.UserName = dto.UserName;
+            //хуй знает как это нормально сделать
+            user = _mapper.Map<User>(dto);
+            //user.UserName = dto.UserName;
 
-            user.FirstName = dto.FirstName;
+            //user.FirstName = dto.FirstName;
 
-            user.LastName = dto.LastName;
+            //user.LastName = dto.LastName;
 
-            user.Avatar = dto.Avatar;
+            //user.Avatar = dto.Avatar;
 
             _repository.User.Update(user);
 
@@ -36,19 +43,16 @@ namespace InnoGotchi_backend.Services
             return true;
         }
 
-        public async Task ChangePassword(ChangePasswordModel changePassword, string email)
+        public async Task<StatusCode> ChangePassword(ChangePasswordModel changePassword, string email)
         {
             User? currentUser = _repository.User.GetUserByEmail(email);
 
-            UserDto dto = new UserDto();
+            //конкретный костыль
+            currentUser.Password = Encoding.UTF8.GetBytes(changePassword.CurrentPassword);
 
-            dto.Password = changePassword.CurrentPassword;
-
-            dto.Email = email;
-
-            if (!_authentication.ValidateUser(dto).Result)
+            if (!_authentication.ValidateUser(currentUser).Result)
             {
-                throw new CustomExeption("Password is incorrect") { StatusCode = ((int)ErrorStatus.WrongPassword) };
+                return StatusCode.WrongPassword;
             }
 
             CreatePasswortHash(changePassword.NewPassword, out byte[] hash, out byte[] salt);
@@ -59,17 +63,33 @@ namespace InnoGotchi_backend.Services
 
             _repository.User.Update(currentUser);
 
-            _repository.Save();
+            try
+            {
+                _repository.Save();
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode.UpdateFailed;
+            }
+            
+            return StatusCode.EverythingGood;
         }
-        public async Task<bool> Registrate(UserDto userDto)
+        public async Task<StatusCode> Registrate(UserDto userDto)
         {
             User user = MakeUser(userDto);
 
             _repository.User.Create(user);
 
-            _repository.Save();
+            try
+            {
+                _repository.Save();
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode.UpdateFailed;
+            }
 
-            return true;
+            return StatusCode.EverythingGood;
         }
 
         private User MakeUser(UserDto dto)
