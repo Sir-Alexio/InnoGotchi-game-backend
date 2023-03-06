@@ -19,6 +19,7 @@ namespace InnoGotchi_backend.Controllers
     public class AccountController : ControllerBase
     {
 
+
         private readonly IUserService _userService;
 
         public AccountController( IUserService userService)
