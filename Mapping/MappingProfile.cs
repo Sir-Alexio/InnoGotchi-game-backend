@@ -8,7 +8,7 @@ namespace InnoGotchi_backend.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<User, UserDto>();
+            //CreateMap<User, UserDto>();
             CreateMap<UserDto, User>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(scr => scr.UserName))
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(scr => scr.FirstName))
@@ -17,8 +17,8 @@ namespace InnoGotchi_backend.Mapping
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(scr => scr.Email))
                 .ForMember(dest => dest.Password, opt => opt.Ignore());
 
-            CreateMap<Farm, FarmDto>();
-            CreateMap<FarmDto, Farm>();
+            //CreateMap<Farm, FarmDto>();
+            //CreateMap<FarmDto, Farm>();
         }
     }
 }

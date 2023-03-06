@@ -26,15 +26,13 @@ namespace InnoGotchi_backend.Services
         {
             User? user = _repository.User.GetUserByEmail(dto.Email);
 
-            //хуй знает как это нормально сделать
-            user = _mapper.Map<User>(dto);
-            //user.UserName = dto.UserName;
+            user.UserName = dto.UserName;
 
-            //user.FirstName = dto.FirstName;
+            user.FirstName = dto.FirstName;
 
-            //user.LastName = dto.LastName;
+            user.LastName = dto.LastName;
 
-            //user.Avatar = dto.Avatar;
+            user.Avatar = dto.Avatar;
 
             _repository.User.Update(user);
 
