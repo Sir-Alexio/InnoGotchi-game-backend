@@ -21,6 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IFarmService, FarmService>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddHttpContextAccessor();

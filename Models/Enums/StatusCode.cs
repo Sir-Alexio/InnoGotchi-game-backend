@@ -6,6 +6,6 @@
         DoesNotExist = 521,
         UpdateFailed = 522,
         IsAlredyExist = 523,
-        EverythingGood = 200
+        Ok = 200
     }
 }

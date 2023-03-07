@@ -46,7 +46,7 @@ namespace InnoGotchi_backend.Services
                 return Models.Enums.StatusCode.WrongPassword;
             }
 
-            return Models.Enums.StatusCode.EverythingGood;
+            return Models.Enums.StatusCode.Ok;
         }
 
         private SigningCredentials GetSigningCredentials()

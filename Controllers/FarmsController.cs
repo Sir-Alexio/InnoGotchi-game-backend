@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using InnoGotchi_backend.Models;
+using InnoGotchi_backend.Models.Enums;
 using InnoGotchi_backend.Models.Dto;
 using InnoGotchi_backend.Repositories.Abstract;
+using InnoGotchi_backend.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,12 +16,11 @@ namespace InnoGotchi_backend.Controllers
     [ApiController]
     public class FarmsController : ControllerBase
     {
-        private readonly IRepositoryManager _repository;
-        private readonly IMapper _mapper;
+        private readonly IFarmService _farmService;
 
-        public FarmsController(IRepositoryManager repository)
+        public FarmsController(IFarmService farmService)
         {
-            _repository = repository;
+            _farmService = farmService;
         }
 
         [HttpPost]
@@ -28,26 +29,26 @@ namespace InnoGotchi_backend.Controllers
         {
             string? email = User.FindFirst(ClaimTypes.Email)?.Value;
 
-            User? curentUser = _repository.User.GetUserByEmail(email);
+            StatusCode status = _farmService.CreateFarm(farmDto, User.FindFirst(ClaimTypes.Email).Value);
 
-            if (curentUser == null)
+            switch (status)
             {
-                return BadRequest("User is not authorize");
+                case Models.Enums.StatusCode.DoesNotExist:
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("No user found")
+                    { StatusCode = Models.Enums.StatusCode.DoesNotExist }));
+
+                case Models.Enums.StatusCode.UpdateFailed:
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Can not update database")
+                    { StatusCode = Models.Enums.StatusCode.UpdateFailed }));
+
+                case Models.Enums.StatusCode.IsAlredyExist:
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("This farm name is already exist!")
+                    { StatusCode = Models.Enums.StatusCode.IsAlredyExist }));
+
             }
-
-            Farm farm = new Farm();
-
-            farm.FarmName = farmDto.FarmName;
-
-            curentUser.MyFarm = farm;
-
-            _repository.User.Update(curentUser);
-
-            _repository.Save();
 
             return Ok(JsonSerializer.Serialize(farmDto));
         }
-
 
         [HttpGet]
         [Authorize]
@@ -55,21 +56,15 @@ namespace InnoGotchi_backend.Controllers
         {
             string? email = User.FindFirst(ClaimTypes.Email)?.Value;
 
-            User? curentUser = _repository.User.GetUserByEmail(email);
+            StatusCode status = _farmService.GetFarm(email,out Farm farm);
 
-            if (curentUser == null)
+            if (status == Models.Enums.StatusCode.DoesNotExist)
             {
-                return BadRequest("User is not authorize");
+                return BadRequest(JsonSerializer.Serialize(new CustomExeption("No farm found!")
+                { StatusCode = Models.Enums.StatusCode.IsAlredyExist }));
             }
 
-            Farm? farm = _repository.Farm.GetByCondition(x => x.UserId == curentUser.UserId, false).FirstOrDefault();
-            
             FarmDto dto = new FarmDto();
-
-            if (farm == null)
-            {
-                return Ok(dto);
-            }
 
             dto.FarmName = farm.FarmName;
 

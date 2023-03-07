@@ -1,26 +1,12 @@
-﻿using InnoGotchi_backend.DataContext;
-using InnoGotchi_backend.Models;
-using InnoGotchi_backend.Repositories;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using InnoGotchi_backend.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Cryptography;
-using System.Text;
+using InnoGotchi_backend.Services.Abstract;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
-using System.Net.Http;
 using Microsoft.AspNetCore.Authentication;
 using AutoMapper;
 using InnoGotchi_backend.Models.Dto;
-using InnoGotchi_backend.Services.Abstract;
-using InnoGotchi_backend.Repositories.Abstract;
 
 namespace InnoGotchi_backend.Controllers
 {
@@ -29,14 +15,12 @@ namespace InnoGotchi_backend.Controllers
     public class AuthController : ControllerBase
     {
         private readonly Services.Abstract.IAuthenticationService _authorization;
-        private readonly IRepositoryManager _repository;
         private readonly IUserService _userService;
         
         private readonly IMapper _mapper;
-        public AuthController(Services.Abstract.IAuthenticationService authorization, IRepositoryManager repository, IMapper mapper, IUserService userService)
+        public AuthController(Services.Abstract.IAuthenticationService authorization,IMapper mapper, IUserService userService)
         {
             _authorization = authorization;
-            _repository = repository;
             _mapper = mapper;
             _userService = userService;
         }
@@ -75,8 +59,5 @@ namespace InnoGotchi_backend.Controllers
 
             return Ok(JsonSerializer.Serialize(_mapper.Map<UserDto>(currentUser)));
         }
-
-       
-
     }
 }

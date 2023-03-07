@@ -45,7 +45,7 @@ namespace InnoGotchi_backend.Services
                 return StatusCode.UpdateFailed;
             }
 
-            return StatusCode.EverythingGood;
+            return StatusCode.Ok;
         }
 
         public StatusCode ChangePassword(ChangePasswordModel changePassword, string email)
@@ -74,7 +74,7 @@ namespace InnoGotchi_backend.Services
                 return StatusCode.UpdateFailed;
             }
             
-            return StatusCode.EverythingGood;
+            return StatusCode.Ok;
         }
 
         public StatusCode Registrate(UserDto userDto)
@@ -97,7 +97,7 @@ namespace InnoGotchi_backend.Services
                 return StatusCode.UpdateFailed;
             }
 
-            return StatusCode.EverythingGood;
+            return StatusCode.Ok;
         }
 
         public StatusCode GetUser(string email,out User? user)
@@ -107,7 +107,7 @@ namespace InnoGotchi_backend.Services
             {
                 return StatusCode.DoesNotExist;
             }
-            return StatusCode.EverythingGood;
+            return StatusCode.Ok;
         }
         private User MakeUser(UserDto dto)
         {
