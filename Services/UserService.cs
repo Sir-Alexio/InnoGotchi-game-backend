@@ -22,7 +22,7 @@ namespace InnoGotchi_backend.Services
             _mapper = mapper;
         }
 
-        public async Task<bool> UpdateUser(UserDto dto)
+        public StatusCode UpdateUser(UserDto dto)
         {
             User? user = _repository.User.GetUserByEmail(dto.Email);
 
@@ -36,19 +36,23 @@ namespace InnoGotchi_backend.Services
 
             _repository.User.Update(user);
 
-            _repository.Save();
+            try
+            {
+                _repository.Save();
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode.UpdateFailed;
+            }
 
-            return true;
+            return StatusCode.EverythingGood;
         }
 
-        public async Task<StatusCode> ChangePassword(ChangePasswordModel changePassword, string email)
+        public StatusCode ChangePassword(ChangePasswordModel changePassword, string email)
         {
             User? currentUser = _repository.User.GetUserByEmail(email);
 
-            //конкретный костыль
-            currentUser.Password = Encoding.UTF8.GetBytes(changePassword.CurrentPassword);
-
-            if (!_authentication.ValidateUser(currentUser).Result)
+            if (_authentication.ValidateUser(changePassword.CurrentPassword,email) == StatusCode.WrongPassword)
             {
                 return StatusCode.WrongPassword;
             }
@@ -72,9 +76,15 @@ namespace InnoGotchi_backend.Services
             
             return StatusCode.EverythingGood;
         }
-        public async Task<StatusCode> Registrate(UserDto userDto)
+
+        public StatusCode Registrate(UserDto userDto)
         {
             User user = MakeUser(userDto);
+
+            if (_repository.User.GetUserByEmail(user.Email) != null)
+            {
+                return StatusCode.IsAlredyExist;
+            }
 
             _repository.User.Create(user);
 
@@ -90,12 +100,21 @@ namespace InnoGotchi_backend.Services
             return StatusCode.EverythingGood;
         }
 
+        public StatusCode GetUser(string email,out User? user)
+        {
+            user = _repository.User.GetUserByEmail(email);
+            if (user == null)
+            {
+                return StatusCode.DoesNotExist;
+            }
+            return StatusCode.EverythingGood;
+        }
         private User MakeUser(UserDto dto)
         {
             User user = new User();
 
             CreatePasswortHash(dto.Password, out byte[] passwordHash, out byte[] passwordSalt);
-
+            //will be simplify later with mapper
             user.UserName = dto.UserName;
             user.FirstName = dto.FirstName;
             user.LastName = dto.LastName;

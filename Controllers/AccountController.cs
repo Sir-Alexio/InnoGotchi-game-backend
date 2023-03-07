@@ -19,7 +19,6 @@ namespace InnoGotchi_backend.Controllers
     public class AccountController : ControllerBase
     {
 
-
         private readonly IUserService _userService;
 
         public AccountController( IUserService userService)
@@ -33,7 +32,13 @@ namespace InnoGotchi_backend.Controllers
         [Authorize]
         public async Task<ActionResult<string>> UpdateUser(UserDto dto)
         {
-            await _userService.UpdateUser(dto);
+            StatusCode status = _userService.UpdateUser(dto);
+
+            if (status == Models.Enums.StatusCode.UpdateFailed)
+            {
+                return BadRequest(JsonSerializer.Serialize(new CustomExeption("Can not update database")
+                { StatusCode = Models.Enums.StatusCode.UpdateFailed }));
+            }
 
             return Ok(JsonSerializer.Serialize(dto));
         }
@@ -42,7 +47,18 @@ namespace InnoGotchi_backend.Controllers
         [HttpPost]
         public async Task<ActionResult<string>> Register(UserDto userDto)
         {
-            await _userService.Registrate(userDto);
+            StatusCode status = _userService.Registrate(userDto);
+
+            switch (status)
+            {
+                case Models.Enums.StatusCode.UpdateFailed:
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Can not update database")
+                    { StatusCode = Models.Enums.StatusCode.UpdateFailed }));
+
+                case Models.Enums.StatusCode.IsAlredyExist:
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("This email is alredy exist! Pl")
+                    { StatusCode = Models.Enums.StatusCode.IsAlredyExist }));
+            }
 
             return Ok();
         }
@@ -55,16 +71,17 @@ namespace InnoGotchi_backend.Controllers
         {
             string email = User.FindFirst(ClaimTypes.Email).Value;
 
-            StatusCode status = await _userService.ChangePassword(changePassword, email);
+            StatusCode status = _userService.ChangePassword(changePassword, email);
 
             switch (status)
             {
                 case Models.Enums.StatusCode.WrongPassword:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Wrong password") { StatusCode = Models.Enums.StatusCode.WrongPassword }));
-                    break;
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Wrong password")
+                    { StatusCode = Models.Enums.StatusCode.WrongPassword }));
+
                 case Models.Enums.StatusCode.UpdateFailed:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Can not update database") { StatusCode = Models.Enums.StatusCode.WrongPassword }));
-                    break;
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Can not update database")
+                    { StatusCode = Models.Enums.StatusCode.WrongPassword }));
             }
 
             return Ok();

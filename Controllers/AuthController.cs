@@ -28,29 +28,35 @@ namespace InnoGotchi_backend.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly Services.Abstract.IAuthenticationService _authorizationManager;
+        private readonly Services.Abstract.IAuthenticationService _authorization;
         private readonly IRepositoryManager _repository;
+        private readonly IUserService _userService;
         
         private readonly IMapper _mapper;
-        public AuthController(Services.Abstract.IAuthenticationService authorizationManager, IRepositoryManager repository, IMapper mapper)
+        public AuthController(Services.Abstract.IAuthenticationService authorization, IRepositoryManager repository, IMapper mapper, IUserService userService)
         {
-            _authorizationManager = authorizationManager;
+            _authorization = authorization;
             _repository = repository;
             _mapper = mapper;
+            _userService = userService;
         }
+
         [HttpPost]   
         public async Task<ActionResult<string>> Login(UserDto dto)
         {
-            User user = new User();
-            user.Email = dto.Email;
-            user.Password = Encoding.UTF8.GetBytes(dto.Password);
+            Models.Enums.StatusCode status = _authorization.ValidateUser(dto.Password, dto.Email);
 
-            if (!_authorizationManager.ValidateUser(user).Result)
+            switch (status)
             {
-                return BadRequest("Wrong email of password");
+                case Models.Enums.StatusCode.WrongPassword:
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Wrong password")
+                    { StatusCode = Models.Enums.StatusCode.WrongPassword }));
+                case Models.Enums.StatusCode.DoesNotExist:
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("No user found")
+                    { StatusCode = Models.Enums.StatusCode.DoesNotExist }));
             }
 
-            string token = _authorizationManager.CreateToken().Result;
+            string token = _authorization.CreateToken().Result;
 
             return Ok(token);
         }
@@ -59,20 +65,15 @@ namespace InnoGotchi_backend.Controllers
         [Authorize]
         public async Task<ActionResult<string>> GetCurrentUser()
         {
-            UserDto dto = new UserDto();
+            Models.Enums.StatusCode status = _userService.GetUser(User.FindFirst(ClaimTypes.Email)?.Value, out User currentUser);
 
-            string? email = User.FindFirst(ClaimTypes.Email)?.Value;
-
-            User? currentUser = _repository.User.GetUserByEmail(email);
-
-            if (currentUser == null)
+            if (status == Models.Enums.StatusCode.DoesNotExist)
             {
-                return BadRequest("User not found");
+                return BadRequest(JsonSerializer.Serialize(new CustomExeption("No user found")
+                { StatusCode = Models.Enums.StatusCode.DoesNotExist }));
             }
 
-            dto = _mapper.Map<UserDto>(currentUser);
-
-            return Ok(JsonSerializer.Serialize(dto));
+            return Ok(JsonSerializer.Serialize(_mapper.Map<UserDto>(currentUser)));
         }
 
        

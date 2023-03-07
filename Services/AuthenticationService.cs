@@ -33,11 +33,20 @@ namespace InnoGotchi_backend.Services
             return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
         }
 
-        public async Task<bool> ValidateUser(User currentUser)
+        public StatusCode ValidateUser(string password,string email)
         {
-            _user = _repository.User.GetUserByEmail(currentUser.Email);
+            _user = _repository.User.GetUserByEmail(email);
 
-            return _user != null && _repository.User.VerifyPasswordHash(Encoding.UTF8.GetString(currentUser.Password), _user.Password, _user.PasswordSalt);
+            if (_user == null)
+            {
+                return Models.Enums.StatusCode.DoesNotExist;
+            }
+            else if (!_repository.User.VerifyPasswordHash(password, _user.Password, _user.PasswordSalt))
+            {
+                return Models.Enums.StatusCode.WrongPassword;
+            }
+
+            return Models.Enums.StatusCode.EverythingGood;
         }
 
         private SigningCredentials GetSigningCredentials()

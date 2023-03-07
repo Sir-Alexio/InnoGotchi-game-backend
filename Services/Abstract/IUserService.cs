@@ -6,8 +6,9 @@ namespace InnoGotchi_backend.Services.Abstract
 {
     public interface IUserService
     {
-        public Task<bool> UpdateUser(UserDto dto);
-        public Task<StatusCode> Registrate(UserDto userDto);
-        public Task<StatusCode> ChangePassword(ChangePasswordModel changePassword, string email);
+        public StatusCode UpdateUser(UserDto dto);
+        public StatusCode Registrate(UserDto userDto);
+        public StatusCode ChangePassword(ChangePasswordModel changePassword, string email);
+        public StatusCode GetUser(string email, out User? user);
     }
 }
