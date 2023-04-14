@@ -54,7 +54,7 @@ namespace InnoGotchi_backend.Controllers
                     { StatusCode = Models.Enums.StatusCode.UpdateFailed }));
 
                 case Models.Enums.StatusCode.IsAlredyExist:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("This email is alredy exist! Pl")
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("This email is alredy exist!")
                     { StatusCode = Models.Enums.StatusCode.IsAlredyExist }));
             }
 
