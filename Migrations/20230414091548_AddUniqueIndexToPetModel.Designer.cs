@@ -4,6 +4,7 @@ using InnoGotchi_backend.DataContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InnoGotchi_backend.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230414091548_AddUniqueIndexToPetModel")]
+    partial class AddUniqueIndexToPetModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,8 +79,9 @@ namespace InnoGotchi_backend.Migrations
                     b.Property<int>("HappyDaysCount")
                         .HasColumnType("int");
 
-                    b.Property<int>("HungerLevel")
-                        .HasColumnType("int");
+                    b.Property<string>("HungerLevel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Mouth")
                         .HasColumnType("nvarchar(max)");
@@ -90,8 +93,9 @@ namespace InnoGotchi_backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("ThirstyLevel")
-                        .HasColumnType("int");
+                    b.Property<string>("ThirstyLevel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PetId");
 

@@ -60,5 +60,22 @@ namespace InnoGotchi_backend.Services
 
             return StatusCode.Ok;
         }
+
+        public StatusCode UpdateFarm(Farm farm)
+        {
+            //тут проеб
+            _repository.Farm.Update(farm);
+
+            try
+            {
+                _repository.Save();
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode.UpdateFailed;
+            }
+
+            return StatusCode.Ok;
+        }
     }
 }

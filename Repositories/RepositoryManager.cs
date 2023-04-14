@@ -8,6 +8,7 @@ namespace InnoGotchi_backend.Repositories
         private readonly ApplicationContext _db;
         private IUserRepository _userRepository;
         private IFarmRepository _farmRepository;
+        private IPetRepository _petRepository;
         public RepositoryManager(ApplicationContext db)
         {
             _db = db;
@@ -36,6 +37,18 @@ namespace InnoGotchi_backend.Repositories
                 return _farmRepository;
             }
 
+        }
+
+        public IPetRepository Pet
+        {
+            get
+            {
+                if (_petRepository == null)
+                {
+                    _petRepository = new PetRepository(_db);
+                }
+                return _petRepository;
+            }
         }
 
         public void Save()

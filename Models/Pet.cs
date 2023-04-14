@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using InnoGotchi_backend.Models.Enums;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace InnoGotchi_backend.Models
 {
+    [Index(nameof(PetName), IsUnique = true)]
     public class Pet
     {
         [Key]
@@ -12,9 +15,9 @@ namespace InnoGotchi_backend.Models
         [Required]
         public int Age { get; set; }
         [Required]
-        public string HungerLevel { get; set; }
+        public HungerLevel HungerLevel { get; set; }
         [Required]
-        public string ThirstyLevel { get; set; }
+        public ThirstyLevel ThirstyLevel { get; set; }
         [Required]
         public int HappyDaysCount { get; set; } = 0;
         public string? Body { get; set; } 

@@ -27,8 +27,6 @@ namespace InnoGotchi_backend.Controllers
         [Authorize]
         public ActionResult CreateFarm(FarmDto farmDto)
         {
-            string? email = User.FindFirst(ClaimTypes.Email)?.Value;
-
             StatusCode status = _farmService.CreateFarm(farmDto, User.FindFirst(ClaimTypes.Email).Value);
 
             switch (status)

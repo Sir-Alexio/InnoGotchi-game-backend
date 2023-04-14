@@ -8,5 +8,7 @@ namespace InnoGotchi_backend.Services.Abstract
     {
         public StatusCode CreateFarm(FarmDto farmDto, string email);
         public StatusCode GetFarm(string email, out Farm farm);
+
+        public StatusCode UpdateFarm(Farm farm);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Models.Dto;
+using InnoGotchi_backend.Models.DTOs;
 
 namespace InnoGotchi_backend.Mapping
 {
@@ -16,6 +17,8 @@ namespace InnoGotchi_backend.Mapping
                 .ForMember(dest => dest.Avatar, opt => opt.MapFrom(scr => scr.Avatar))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(scr => scr.Email))
                 .ForMember(dest => dest.Password, opt => opt.Ignore());
+
+            CreateMap<PetDto, Pet>();
 
             //CreateMap<Farm, FarmDto>();
             //CreateMap<FarmDto, Farm>();

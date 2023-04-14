@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using InnoGotchi_backend.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace InnoGotchi_backend.Models.DTOs
 {
@@ -8,9 +9,9 @@ namespace InnoGotchi_backend.Models.DTOs
         [Required]
         public int Age { get; set; }
         [Required]
-        public string HungerLevel { get; set; }
+        public HungerLevel HungerLevel { get; set; }
         [Required]
-        public string ThirstyLevel { get; set; }
+        public ThirstyLevel ThirstyLevel { get; set; }
         [Required]
         public int HappyDaysCount { get; set; } = 0;
         public string? Body { get; set; }

@@ -1,17 +1,11 @@
-using AutoMapper;
 using InnoGotchi_backend.DataContext;
-using InnoGotchi_backend.Mapping;
-using InnoGotchi_backend.Models;
-using InnoGotchi_backend.Models.Dto;
 using InnoGotchi_backend.Repositories;
 using InnoGotchi_backend.Repositories.Abstract;
 using InnoGotchi_backend.Services.Abstract;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Filters;
-using System;
 using System.Text;
 using InnoGotchi_backend.Services;
 
@@ -22,6 +16,7 @@ builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFarmService, FarmService>();
+builder.Services.AddScoped<IPetService, PetService>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddHttpContextAccessor();
