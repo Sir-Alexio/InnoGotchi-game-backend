@@ -63,7 +63,6 @@ namespace InnoGotchi_backend.Services
 
         public StatusCode UpdateFarm(Farm farm)
         {
-            //тут проеб
             _repository.Farm.Update(farm);
 
             try

@@ -26,12 +26,7 @@ namespace InnoGotchi_backend.Services
                 return StatusCode.IsAlredyExist;
             }
 
-            //и тут проеб конкретный
-            Farm? farm = _repository.Farm.GetByCondition(x => x.FarmId == pet.FarmId, false).FirstOrDefault();
-            farm.Pets = new List<Pet>();
-            farm.Pets.Add(pet);
-            _repository.Farm.Update(farm);
-            //_repository.Pet.Create(pet);
+            _repository.Pet.Create(pet);
 
             try
             {

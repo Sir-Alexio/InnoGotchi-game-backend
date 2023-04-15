@@ -37,16 +37,18 @@ namespace InnoGotchi_backend.Controllers
         [Route("new-pet")]
         public ActionResult CreatePet(PetDto dto)
         {
+            Farm currentFarm = new Farm();
+
             string email = User.FindFirst(ClaimTypes.Email).Value;
 
-            _farmService.GetFarm(email,out var currentFarm);
+            _farmService.GetFarm(email,out currentFarm);
 
             Pet pet = new Pet();
 
             _mapper.Map(dto, pet);
 
-            pet.Farm = currentFarm;
             pet.FarmId = currentFarm.FarmId;
+
             StatusCode status = _petService.CreatePet(pet);
 
             switch (status)
@@ -63,10 +65,17 @@ namespace InnoGotchi_backend.Controllers
                     return BadRequest(JsonSerializer.Serialize(new CustomExeption("This pet name is already exist!")
                     { StatusCode = Models.Enums.StatusCode.IsAlredyExist }));
             }
-            _farmService.GetFarm(email, out var currentFarm1);
-            currentFarm1.AlivePetsCount += 1;
+            
+            currentFarm.AlivePetsCount += 1;
 
-            _farmService.UpdateFarm(currentFarm1);
+            status =  _farmService.UpdateFarm(currentFarm);
+
+            switch (status)
+            {
+                case Models.Enums.StatusCode.UpdateFailed:
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Can not update farm table in database")
+                    { StatusCode = Models.Enums.StatusCode.UpdateFailed }));
+            }
 
             return Ok();
         }
