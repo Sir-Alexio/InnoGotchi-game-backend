@@ -11,9 +11,19 @@ namespace InnoGotchi_backend.Services
     public class PetService : IPetService
     {
         private readonly IRepositoryManager _repository;
-        public PetService(IRepositoryManager repository)
+        private readonly IFarmService _farmSevice;
+        public PetService(IRepositoryManager repository, IFarmService farmService)
         {
             _repository = repository;
+            _farmSevice = farmService;
+        }
+        public StatusCode GetCurrentPet(string petName, out Pet? pet)
+        {
+            pet = _repository.Pet.GetByCondition(x => x.PetName == petName, false).FirstOrDefault();
+
+            if (pet == null) { return StatusCode.DoesNotExist; }
+
+            return StatusCode.Ok;
         }
         public StatusCode CreatePet(Pet pet)
         {
@@ -36,6 +46,22 @@ namespace InnoGotchi_backend.Services
             {
                 return StatusCode.UpdateFailed;
             }
+
+            return StatusCode.Ok;
+        }
+
+        public StatusCode GetAllPets(string email, out List<Pet> pets)
+        {
+            pets = new List<Pet>();
+
+            _farmSevice.GetFarm(email, out Farm? farm);
+
+            if (farm == null)
+            {
+                return StatusCode.DoesNotExist;
+            }
+
+            pets = _repository.Pet.GetByCondition(x=>x.FarmId == farm.FarmId,false).ToList();
 
             return StatusCode.Ok;
         }

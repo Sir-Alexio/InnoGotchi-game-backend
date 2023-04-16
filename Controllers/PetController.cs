@@ -26,10 +26,40 @@ namespace InnoGotchi_backend.Controllers
             _mapper = mapper;
 
         }
-        [HttpGet,Authorize]
-        public async Task<ActionResult<string>> GetPet()
+
+        [HttpGet]
+        [Authorize]
+        [Route("current-pet/{petName}")]
+        public async Task<ActionResult<string>> GetCurrentPet(string petName)
         {
-            return Ok("Hello from api");
+            StatusCode status = _petService.GetCurrentPet(petName, out Pet? pet);
+
+            if(status == Models.Enums.StatusCode.DoesNotExist) {
+                return BadRequest(JsonSerializer.Serialize(new CustomExeption("No pet found.")
+                { StatusCode = Models.Enums.StatusCode.DoesNotExist }));
+            }
+
+            return Ok(JsonSerializer.Serialize(_mapper.Map<PetDto>(pet)));
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("all-pets")]
+        public async Task<ActionResult<string>> GetPets()
+        {
+            StatusCode status = _petService.GetAllPets(User.FindFirst(ClaimTypes.Email).Value, out List<Pet>? pets);
+            switch (status)
+            {
+                case Models.Enums.StatusCode.DoesNotExist:
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("No farm found for this user")
+                    { StatusCode = Models.Enums.StatusCode.DoesNotExist }));
+            }
+
+            List<PetDto> dtos = _mapper.Map<List<PetDto>>(pets);
+
+            string json = JsonSerializer.Serialize(dtos);
+
+            return Ok(json);
         }
 
         [HttpPost]
