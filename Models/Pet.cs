@@ -13,11 +13,11 @@ namespace InnoGotchi_backend.Models
         [Required]
         public string PetName { get; set; }
         [Required]
-        public int Age { get; set; }
+        public DateTime AgeDate { get; set; }
         [Required]
-        public HungerLevel HungerLevel { get; set; }
+        public DateTime LastHungerLevel { get; set; }
         [Required]
-        public ThirstyLevel ThirstyLevel { get; set; }
+        public DateTime LastThirstyLevel { get; set; }
         [Required]
         public int HappyDaysCount { get; set; } = 0;
         public string? Body { get; set; } 

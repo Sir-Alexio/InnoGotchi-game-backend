@@ -4,6 +4,7 @@ using InnoGotchi_backend.DataContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InnoGotchi_backend.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230421071408_removecolumns")]
+    partial class removecolumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,9 +64,6 @@ namespace InnoGotchi_backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PetId"), 1L, 1);
 
-                    b.Property<DateTime>("AgeDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Body")
                         .HasColumnType("nvarchar(max)");
 
@@ -76,12 +75,6 @@ namespace InnoGotchi_backend.Migrations
 
                     b.Property<int>("HappyDaysCount")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("LastHungerLevel")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("LastThirstyLevel")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Mouth")
                         .HasColumnType("nvarchar(max)");

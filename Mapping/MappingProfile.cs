@@ -22,9 +22,9 @@ namespace InnoGotchi_backend.Mapping
 
             CreateMap<Pet, PetDto>()
            .ForMember(dest => dest.PetName, opt => opt.MapFrom(src => src.PetName))
-           .ForMember(dest => dest.Age, opt => opt.MapFrom(src => src.Age))
-           .ForMember(dest => dest.HungerLevel, opt => opt.MapFrom(src => src.HungerLevel))
-           .ForMember(dest => dest.ThirstyLevel, opt => opt.MapFrom(src => src.ThirstyLevel))
+           .ForMember(dest => dest.AgeDate, opt => opt.MapFrom(src => src.AgeDate))
+           .ForMember(dest => dest.LastHungerLevel, opt => opt.MapFrom(src => src.LastHungerLevel))
+           .ForMember(dest => dest.LastThirstyLevel, opt => opt.MapFrom(src => src.LastThirstyLevel))
            .ForMember(dest => dest.HappyDaysCount, opt => opt.MapFrom(src => src.HappyDaysCount));
 
             

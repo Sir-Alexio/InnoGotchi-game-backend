@@ -109,5 +109,8 @@ namespace InnoGotchi_backend.Controllers
 
             return Ok();
         }
+        //TO DO
+        //http patch request for updating curent pet
+        [HttpPatch]
     }
 }
