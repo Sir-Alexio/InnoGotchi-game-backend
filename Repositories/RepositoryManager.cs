@@ -55,5 +55,10 @@ namespace InnoGotchi_backend.Repositories
         {
             _db.SaveChanges();
         }
+
+        public void Attach(object obj)
+        {
+            _db.Attach(obj);
+        }
     }
 }

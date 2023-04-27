@@ -1,4 +1,5 @@
-﻿using InnoGotchi_backend.Models;
+﻿using AutoMapper;
+using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Models.Dto;
 using InnoGotchi_backend.Models.DTOs;
 using InnoGotchi_backend.Models.Enums;
@@ -12,10 +13,12 @@ namespace InnoGotchi_backend.Services
     {
         private readonly IRepositoryManager _repository;
         private readonly IFarmService _farmSevice;
-        public PetService(IRepositoryManager repository, IFarmService farmService)
+        private readonly IMapper _mapper;
+        public PetService(IRepositoryManager repository, IFarmService farmService,IMapper mapper)
         {
             _repository = repository;
             _farmSevice = farmService;
+            _mapper = mapper;
         }
         public StatusCode GetCurrentPet(string petName, out Pet? pet)
         {
@@ -62,6 +65,52 @@ namespace InnoGotchi_backend.Services
             }
 
             pets = _repository.Pet.GetByCondition(x=>x.FarmId == farm.FarmId,false).ToList();
+
+            return StatusCode.Ok;
+        }
+
+        public StatusCode FeedPet(string petName)
+        {
+            Pet pet = _repository.Pet.GetByCondition(x => x.PetName == petName, true).First();
+
+            pet.LastHungerLevel = DateTime.Now;
+
+            try
+            {
+                _repository.Pet.Update(pet);
+                _repository.Save();
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode.UpdateFailed;
+            }
+            catch (InvalidOperationException)
+            {
+                return StatusCode.InsertDuplicateValue;
+            }
+
+            return StatusCode.Ok;
+        }
+
+        public StatusCode GiveDrinkToPet(string petName)
+        {
+            Pet pet = _repository.Pet.GetByCondition(x => x.PetName == petName, true).First();
+
+            pet.LastThirstyLevel = DateTime.Now;
+
+            try
+            {
+                _repository.Pet.Update(pet);
+                _repository.Save();
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode.UpdateFailed;
+            }
+            catch (InvalidOperationException)
+            {
+                return StatusCode.InsertDuplicateValue;
+            }
 
             return StatusCode.Ok;
         }

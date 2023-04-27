@@ -9,6 +9,7 @@ using System.Security.Claims;
 using InnoGotchi_backend.Models.Enums;
 using AutoMapper;
 using System.Text.Json;
+using System.ComponentModel.Design;
 
 namespace InnoGotchi_backend.Controllers
 {
@@ -111,6 +112,24 @@ namespace InnoGotchi_backend.Controllers
         }
         //TO DO
         //http patch request for updating curent pet
-        [HttpPatch]
+        [HttpPatch("{petName}")]
+        [Authorize]
+        [Route("feed-current-pet")]
+        public IActionResult FeedCurrentPet(string petName)
+        {
+            StatusCode status = _petService.FeedPet(petName);
+
+            switch (status)
+            {
+                case Models.Enums.StatusCode.UpdateFailed:
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Can not update pet table in database")
+                    { StatusCode = Models.Enums.StatusCode.UpdateFailed }));
+
+                case Models.Enums.StatusCode.InsertDuplicateValue:
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Invalid duplicated key")
+                    { StatusCode = Models.Enums.StatusCode.InsertDuplicateValue }));
+            }
+            return Ok();
+        }
     }
 }

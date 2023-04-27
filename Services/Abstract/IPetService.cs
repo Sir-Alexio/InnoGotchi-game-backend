@@ -9,5 +9,7 @@ namespace InnoGotchi_backend.Services.Abstract
         public StatusCode CreatePet(Pet pet);
         public StatusCode GetAllPets(string email, out List<Pet> pets);
         public StatusCode GetCurrentPet(string petName, out Pet? pet);
+        public StatusCode FeedPet(string petName);
+        public StatusCode GiveDrinkToPet(string petName);
     }
 }
