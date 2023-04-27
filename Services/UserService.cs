@@ -22,6 +22,18 @@ namespace InnoGotchi_backend.Services
             _mapper = mapper;
         }
 
+        public StatusCode GetAll(out List<User> users)
+        {
+            users = _repository.User.GetAll(true).ToList();
+
+            if (users == null)
+            {
+                return StatusCode.DoesNotExist;
+            }
+
+            return StatusCode.Ok;
+        }
+
         public StatusCode UpdateUser(UserDto dto)
         {
             User? user = _repository.User.GetUserByEmail(dto.Email);

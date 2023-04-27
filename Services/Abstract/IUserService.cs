@@ -10,5 +10,6 @@ namespace InnoGotchi_backend.Services.Abstract
         public StatusCode Registrate(UserDto userDto);
         public StatusCode ChangePassword(ChangePasswordModel changePassword, string email);
         public StatusCode GetUser(string email, out User? user);
+        public StatusCode GetAll(out List<User> users);
     }
 }

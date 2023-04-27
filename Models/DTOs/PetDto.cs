@@ -7,11 +7,11 @@ namespace InnoGotchi_backend.Models.DTOs
     {
         public string PetName { get; set; }
         [Required]
-        public DateTime AgeDate { get; set; }
+        public DateTime AgeDate { get; set; } = DateTime.Now;
         [Required]
-        public DateTime LastHungerLevel { get; set; }
-        [Required]
-        public DateTime LastThirstyLevel { get; set; }
+        public DateTime LastHungerLevel { get; set; } = DateTime.Now;
+        [Required] 
+        public DateTime LastThirstyLevel { get; set; } = DateTime.Now;
         [Required]
         public int HappyDaysCount { get; set; } = 0;
         public string? Body { get; set; }
@@ -21,17 +21,17 @@ namespace InnoGotchi_backend.Models.DTOs
 
         public HungerLevel GetHungerLevel() 
         {
-            int minutes = DateTime.Now.Subtract(LastHungerLevel).Minutes;
+            int days = DateTime.Now.Subtract(LastHungerLevel).Days;
 
-            if (minutes == 0)
+            if (days == 0)
             {
                 return HungerLevel.Full;
             }
-            else if (minutes == 1)
+            else if (days == 1)
             {
                 return HungerLevel.Normal;
             }
-            else if (minutes == 2)
+            else if (days == 2)
             {
                 return HungerLevel.Hunger;
             }
@@ -41,22 +41,22 @@ namespace InnoGotchi_backend.Models.DTOs
 
         public int GetAge()
         {
-            return DateTime.Now.Subtract(this.AgeDate).Minutes;
+            return DateTime.Now.Subtract(this.AgeDate).Days;
         }
 
         public ThirstyLevel GetThirstyLevel()
         {
-            int minutes = DateTime.Now.Subtract(this.LastThirstyLevel).Minutes;
+            int days = DateTime.Now.Subtract(this.LastThirstyLevel).Days;
 
-            if (minutes == 0)
+            if (days == 0)
             {
                 return ThirstyLevel.Full;
             }
-            else if (minutes == 1)
+            else if (days == 1)
             {
                 return ThirstyLevel.Normal;
             }
-            else if (minutes == 2)
+            else if (days == 2)
             {
                 return ThirstyLevel.Thirsty;
             }

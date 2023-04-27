@@ -110,14 +110,33 @@ namespace InnoGotchi_backend.Controllers
 
             return Ok();
         }
-        //TO DO
-        //http patch request for updating curent pet
-        [HttpPatch("{petName}")]
+
+        [HttpPatch]
         [Authorize]
         [Route("feed-current-pet")]
-        public IActionResult FeedCurrentPet(string petName)
+        public IActionResult FeedCurrentPet(PetDto dto)
         {
-            StatusCode status = _petService.FeedPet(petName);
+            StatusCode status = _petService.FeedPet(dto.PetName);
+
+            switch (status)
+            {
+                case Models.Enums.StatusCode.UpdateFailed:
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Can not update pet table in database")
+                    { StatusCode = Models.Enums.StatusCode.UpdateFailed }));
+
+                case Models.Enums.StatusCode.InsertDuplicateValue:
+                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Invalid duplicated key")
+                    { StatusCode = Models.Enums.StatusCode.InsertDuplicateValue }));
+            }
+            return Ok();
+        }
+
+        [HttpPatch]
+        [Authorize]
+        [Route("give-drink")]
+        public IActionResult GiveDrink(PetDto dto)
+        {
+            StatusCode status = _petService.GiveDrinkToPet(dto.PetName);
 
             switch (status)
             {
