@@ -3,9 +3,9 @@ using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Models.Dto;
 using InnoGotchi_backend.Models.DTOs;
 
-namespace InnoGotchi_backend.Mapping
+namespace InnoGotchi_backend.Extensions.Mapping
 {
-    public class MappingProfile:Profile
+    public class MappingProfile : Profile
     {
         public MappingProfile()
         {
@@ -34,7 +34,7 @@ namespace InnoGotchi_backend.Mapping
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.Avatar))
                 .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password));
-            
+
         }
     }
 }

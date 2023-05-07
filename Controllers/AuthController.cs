@@ -14,33 +14,30 @@ namespace InnoGotchi_backend.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly Services.Abstract.IAuthenticationService _authorization;
+        private readonly Services.Abstract.IAuthenticationService _authorizationService;
         private readonly IUserService _userService;
+
         
         private readonly IMapper _mapper;
-        public AuthController(Services.Abstract.IAuthenticationService authorization,IMapper mapper, IUserService userService)
+        public AuthController(Services.Abstract.IAuthenticationService authorizationService,IMapper mapper, IUserService userService)
         {
-            _authorization = authorization;
+            _authorizationService = authorizationService;
             _mapper = mapper;
             _userService = userService;
+
         }
 
         [HttpPost]   
         public async Task<ActionResult<string>> Login(UserDto dto)
         {
-            Models.Enums.StatusCode status = _authorization.ValidateUser(dto.Password, dto.Email);
-
-            switch (status)
+            //user validation
+            if (!_authorizationService.ValidateUser(dto.Password, dto.Email))
             {
-                case Models.Enums.StatusCode.WrongPassword:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Wrong password")
-                    { StatusCode = Models.Enums.StatusCode.WrongPassword }));
-                case Models.Enums.StatusCode.DoesNotExist:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("No user found")
-                    { StatusCode = Models.Enums.StatusCode.DoesNotExist }));
+                return Unauthorized("Wrond password");
             }
 
-            string token = _authorization.CreateToken().Result;
+            //create JWT token
+            string token = _authorizationService.CreateToken().Result;
 
             return Ok(token);
         }

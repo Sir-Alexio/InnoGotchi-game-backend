@@ -64,10 +64,10 @@ namespace InnoGotchi_backend.Services
         {
             User? currentUser = _repository.User.GetUserByEmail(email);
 
-            if (_authentication.ValidateUser(changePassword.CurrentPassword,email) == StatusCode.WrongPassword)
-            {
-                return StatusCode.WrongPassword;
-            }
+            //if (_authentication.ValidateUser(changePassword.CurrentPassword,email) == StatusCode.WrongPassword)
+            //{
+            //    return StatusCode.WrongPassword;
+            //}
 
             CreatePasswortHash(changePassword.NewPassword, out byte[] hash, out byte[] salt);
 

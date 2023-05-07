@@ -1,11 +1,13 @@
 ﻿using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Models.Dto;
 using InnoGotchi_backend.Models.Enums;
+using InnoGotchi_backend.Models.ErrorModel;
 using InnoGotchi_backend.Repositories.Abstract;
 using InnoGotchi_backend.Services.Abstract;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -33,20 +35,20 @@ namespace InnoGotchi_backend.Services
             return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
         }
 
-        public StatusCode ValidateUser(string password,string email)
+        public bool ValidateUser(string password,string email)
         {
             _user = _repository.User.GetUserByEmail(email);
 
             if (_user == null)
             {
-                return Models.Enums.StatusCode.DoesNotExist;
+                throw new CustomExeption("No user found") { StatusCode = Models.Enums.StatusCode.DoesNotExist };
             }
-            else if (!_repository.User.VerifyPasswordHash(password, _user.Password, _user.PasswordSalt))
+            if (!_repository.User.VerifyPasswordHash(password, _user.Password, _user.PasswordSalt))
             {
-                return Models.Enums.StatusCode.WrongPassword;
+                return false;
             }
 
-            return Models.Enums.StatusCode.Ok;
+            return true;
         }
 
         private SigningCredentials GetSigningCredentials()

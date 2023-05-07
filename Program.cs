@@ -8,6 +8,8 @@ using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 using InnoGotchi_backend.Services;
+using InnoGotchi_backend.Extensions;
+using InnoGotchi_backend.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +24,6 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>
@@ -37,13 +38,6 @@ builder.Services.AddSwaggerGen(options =>
 
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
-
-//var config = new MapperConfiguration(cfg =>
-//{
-//    // Create a mapping from User to UserDto
-//    cfg.CreateMap<User, UserDto>();
-//    cfg.CreateMap<UserDto, User>();
-//});
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
@@ -86,6 +80,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.ConfigureExceptionHandler(app.Logger);
 
 app.UseHttpsRedirection();
 
