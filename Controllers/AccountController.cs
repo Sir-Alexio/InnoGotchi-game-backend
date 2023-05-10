@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 
 namespace InnoGotchi_backend.Controllers
@@ -30,12 +31,12 @@ namespace InnoGotchi_backend.Controllers
         [Authorize]
         public async Task<ActionResult<string>> UpdateUser(UserDto dto)
         {
-            StatusCode status = _userService.UpdateUser(dto);
+            //Update User
+            bool isUserUpdated = _userService.UpdateUser(dto);
 
-            if (status == Models.Enums.StatusCode.UpdateFailed)
+            if (!isUserUpdated)
             {
-                return BadRequest(JsonSerializer.Serialize(new CustomExeption("Can not update database")
-                { StatusCode = Models.Enums.StatusCode.UpdateFailed }));
+                return BadRequest("Can not update user");
             }
 
             return Ok(JsonSerializer.Serialize(dto));
@@ -45,17 +46,11 @@ namespace InnoGotchi_backend.Controllers
         [HttpPost]
         public async Task<ActionResult<string>> Register(UserDto userDto)
         {
-            StatusCode status = _userService.Registrate(userDto);
+            bool isUserRegistrated = _userService.Registrate(userDto);
 
-            switch (status)
+            if (!isUserRegistrated)
             {
-                case Models.Enums.StatusCode.UpdateFailed:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Can not update database")
-                    { StatusCode = Models.Enums.StatusCode.UpdateFailed }));
-
-                case Models.Enums.StatusCode.IsAlredyExist:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("This email is alredy exist!")
-                    { StatusCode = Models.Enums.StatusCode.IsAlredyExist }));
+                return BadRequest("Can not registrate user");
             }
 
             return Ok();
@@ -64,22 +59,15 @@ namespace InnoGotchi_backend.Controllers
         [Route("change-password")]
         [HttpPatch]
         [Authorize]
-
         public async Task<ActionResult<string>> ChangePassword(ChangePasswordModel changePassword)
         {
             string email = User.FindFirst(ClaimTypes.Email).Value;
 
-            StatusCode status = _userService.ChangePassword(changePassword, email);
+            bool isPasswordChanged = _userService.ChangePassword(changePassword, email);
 
-            switch (status)
+            if (!isPasswordChanged)
             {
-                case Models.Enums.StatusCode.WrongPassword:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Wrong password")
-                    { StatusCode = Models.Enums.StatusCode.WrongPassword }));
-
-                case Models.Enums.StatusCode.UpdateFailed:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Can not update database")
-                    { StatusCode = Models.Enums.StatusCode.WrongPassword }));
+                return Unauthorized("Password was incorrect");
             }
 
             return Ok();

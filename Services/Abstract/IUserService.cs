@@ -6,10 +6,10 @@ namespace InnoGotchi_backend.Services.Abstract
 {
     public interface IUserService
     {
-        public StatusCode UpdateUser(UserDto dto);
-        public StatusCode Registrate(UserDto userDto);
-        public StatusCode ChangePassword(ChangePasswordModel changePassword, string email);
-        public StatusCode GetUser(string email, out User? user);
-        public StatusCode GetAll(out List<User> users);
+        public bool UpdateUser(UserDto dto);
+        public bool Registrate(UserDto userDto);
+        public bool ChangePassword(ChangePasswordModel changePassword, string email);
+        public User GetUser(string email);
+        public List<User> GetAll();
     }
 }

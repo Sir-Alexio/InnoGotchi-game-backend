@@ -29,16 +29,7 @@ namespace InnoGotchi_backend.Controllers
         [Route("all-users")]
         public IActionResult GetAllUsers()
         {
-            List<User> users = new List<User>();
-
-            StatusCode status = _userService.GetAll(out users);
-
-            switch (status)
-            {
-                case Models.Enums.StatusCode.DoesNotExist:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("No farm found for this user")
-                    { StatusCode = Models.Enums.StatusCode.DoesNotExist }));
-            }
+            List<User> users = _userService.GetAll();
 
             List<UserDto> dtos = _mapper.Map<List<UserDto>>(users);
 

@@ -41,7 +41,7 @@ namespace InnoGotchi_backend.Services
 
             if (_user == null)
             {
-                throw new CustomExeption("No user found") { StatusCode = Models.Enums.StatusCode.DoesNotExist };
+                throw new CustomExeption(message: "No user found") { StatusCode = Models.Enums.StatusCode.DoesNotExist };
             }
             if (!_repository.User.VerifyPasswordHash(password, _user.Password, _user.PasswordSalt))
             {

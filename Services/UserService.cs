@@ -22,123 +22,140 @@ namespace InnoGotchi_backend.Services
             _mapper = mapper;
         }
 
-        public StatusCode GetAll(out List<User> users)
+        public List<User> GetAll()
         {
-            users = _repository.User.GetAll(true).ToList();
+            //Get all users from the database
+            List<User> users = _repository.User.GetAll(trackChanges:true).ToList();
 
             if (users == null)
             {
-                return StatusCode.DoesNotExist;
+                throw new CustomExeption(message: "No users found") { StatusCode = StatusCode.DoesNotExist };
             }
 
-            return StatusCode.Ok;
+            return users;
         }
 
-        public StatusCode UpdateUser(UserDto dto)
+        public bool UpdateUser(UserDto dto)
         {
+            //Get user from database
             User? user = _repository.User.GetUserByEmail(dto.Email);
 
-            user.UserName = dto.UserName;
+            if (user == null)
+            {
+                throw new CustomExeption(message: "No user found") { StatusCode = StatusCode.DoesNotExist };
+            }
 
-            user.FirstName = dto.FirstName;
+            //Map UserDto to User entity
+            user = _mapper.Map<User>(dto);
 
-            user.LastName = dto.LastName;
-
-            user.Avatar = dto.Avatar;
-
+            //Update entity
             _repository.User.Update(user);
 
             try
             {
+                //Try save changes to the database
                 _repository.Save();
             }
             catch (DbUpdateException)
             {
-                return StatusCode.UpdateFailed;
+                return false;
             }
 
-            return StatusCode.Ok;
+            return true;
         }
 
-        public StatusCode ChangePassword(ChangePasswordModel changePassword, string email)
+        public bool ChangePassword(ChangePasswordModel changePassword, string email)
         {
+            //Get current user by email
             User? currentUser = _repository.User.GetUserByEmail(email);
 
-            //if (_authentication.ValidateUser(changePassword.CurrentPassword,email) == StatusCode.WrongPassword)
-            //{
-            //    return StatusCode.WrongPassword;
-            //}
+            //Validate old password
+            if (!_authentication.ValidateUser(changePassword.CurrentPassword, email))
+            {
+                return false;
+            }
 
+            //Create hash and salt of new password
             CreatePasswortHash(changePassword.NewPassword, out byte[] hash, out byte[] salt);
 
+            //Set hash and salt to entity we got from the database
+            //It's important before updating we must get entity from the database in current method
             currentUser.Password = hash;
 
             currentUser.PasswordSalt = salt;
 
             _repository.User.Update(currentUser);
 
+            //Try update changes
             try
             {
                 _repository.Save();
             }
             catch (DbUpdateException)
             {
-                return StatusCode.UpdateFailed;
+                throw new CustomExeption(message:"Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
-            
-            return StatusCode.Ok;
+
+            return true;
         }
 
-        public StatusCode Registrate(UserDto userDto)
+        public bool Registrate(UserDto userDto)
         {
+            //Create user in private method
             User user = MakeUser(userDto);
 
+            //Check if email for user is alredy exist
             if (_repository.User.GetUserByEmail(user.Email) != null)
             {
-                return StatusCode.IsAlredyExist;
+                throw new CustomExeption(message: "This email is alredy exist") { StatusCode = StatusCode.IsAlredyExist };
             }
 
             _repository.User.Create(user);
 
+            //Check for updating entity
             try
             {
                 _repository.Save();
             }
             catch (DbUpdateException)
             {
-                return StatusCode.UpdateFailed;
+                return false;
             }
 
-            return StatusCode.Ok;
+            return true;
         }
 
-        public StatusCode GetUser(string email,out User? user)
+        public User GetUser(string email)
         {
-            user = _repository.User.GetUserByEmail(email);
+            User? user = _repository.User.GetUserByEmail(email);
+
             if (user == null)
             {
-                return StatusCode.DoesNotExist;
+                throw new CustomExeption(message: "No user found") { StatusCode = StatusCode.DoesNotExist };
             }
-            return StatusCode.Ok;
+
+            return user;
         }
+
+        //Private method for creating new user
         private User MakeUser(UserDto dto)
         {
             User user = new User();
 
+            //Create password hash
             CreatePasswortHash(dto.Password, out byte[] passwordHash, out byte[] passwordSalt);
-            //will be simplify later with mapper
-            user.UserName = dto.UserName;
-            user.FirstName = dto.FirstName;
-            user.LastName = dto.LastName;
-            user.Email = dto.Email;
-            user.Avatar = dto.Avatar;
+
+            user = _mapper.Map<User>(dto);
+
             user.Password = passwordHash;
+
             user.PasswordSalt = passwordSalt;
 
             return user;
 
         }
 
+        //Private method for creating password hash and salt
         private void CreatePasswortHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (HMACSHA512 hmac = new HMACSHA512())

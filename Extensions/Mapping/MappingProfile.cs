@@ -9,7 +9,13 @@ namespace InnoGotchi_backend.Extensions.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<User, UserDto>();
+            CreateMap<User, UserDto>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(scr => scr.UserName))
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(scr => scr.FirstName))
+                .ForMember(dest => dest.LastName, opt => opt.MapFrom(scr => scr.LastName))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(scr => scr.Email))
+                .ForMember(dest => dest.Avatar, opt => opt.MapFrom(scr => scr.Avatar));
+
             CreateMap<UserDto, User>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(scr => scr.UserName))
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(scr => scr.FirstName))

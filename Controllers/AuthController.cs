@@ -24,7 +24,6 @@ namespace InnoGotchi_backend.Controllers
             _authorizationService = authorizationService;
             _mapper = mapper;
             _userService = userService;
-
         }
 
         [HttpPost]   
@@ -46,13 +45,7 @@ namespace InnoGotchi_backend.Controllers
         [Authorize]
         public async Task<ActionResult<string>> GetCurrentUser()
         {
-            Models.Enums.StatusCode status = _userService.GetUser(User.FindFirst(ClaimTypes.Email)?.Value, out User currentUser);
-
-            if (status == Models.Enums.StatusCode.DoesNotExist)
-            {
-                return BadRequest(JsonSerializer.Serialize(new CustomExeption("No user found")
-                { StatusCode = Models.Enums.StatusCode.DoesNotExist }));
-            }
+            User currentUser = _userService.GetUser(User.FindFirst(ClaimTypes.Email)?.Value);
 
             return Ok(JsonSerializer.Serialize(_mapper.Map<UserDto>(currentUser)));
         }
