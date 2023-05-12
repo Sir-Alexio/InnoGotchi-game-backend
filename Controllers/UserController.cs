@@ -24,9 +24,9 @@ namespace InnoGotchi_backend.Controllers
         [Authorize]
         [HttpGet]
         [Route("all-users")]
-        public IActionResult GetAllUsers()
+        public async Task<IActionResult> GetAllUsers()
         {
-            List<User> users = _userService.GetAll();
+            List<User> users = await _userService.GetAll();
 
             List<UserDto> dtos = _mapper.Map<List<UserDto>>(users);
 

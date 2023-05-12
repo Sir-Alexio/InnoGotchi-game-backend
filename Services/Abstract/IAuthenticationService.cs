@@ -2,7 +2,7 @@
 {
     public interface IAuthenticationService
     {
-        public bool ValidateUser(string password,string email);
+        public Task<bool> ValidateUser(string password,string email);
         public Task<string> CreateToken();
     }
 }

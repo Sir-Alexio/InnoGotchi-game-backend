@@ -2,6 +2,7 @@
 using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Repositories.Abstract;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
 namespace InnoGotchi_backend.Repositories
@@ -9,25 +10,12 @@ namespace InnoGotchi_backend.Repositories
 
     public class UserRepository : RepositoryBase<User>, IUserRepository
     {
-        public UserRepository(ApplicationContext db) : base(db)
-        {
+        public UserRepository(ApplicationContext db) : base(db) { }
 
-        }
-
-        public User? GetUserByEmail(string email)
+        public async Task<User?> GetUserByEmail(string email)
         {
-            User? user = GetByCondition(s => s.Email == email, false).FirstOrDefault();
+            User? user = await GetByCondition(s => s.Email == email, false).Result.FirstOrDefaultAsync();
             return user;
-        }
-        public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
-        {
-            using (HMACSHA512 hmac = new HMACSHA512(passwordSalt))
-            {
-                var computeHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-
-                return computeHash.SequenceEqual(passwordHash);
-            }
-        }
+        } 
     }
-    
 }

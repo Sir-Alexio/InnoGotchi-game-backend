@@ -13,12 +13,12 @@ namespace InnoGotchi_backend.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly Services.Abstract.IAuthenticationService _authorizationService;
+        private readonly IAuthenticationService _authorizationService;
         private readonly IUserService _userService;
 
         
         private readonly IMapper _mapper;
-        public AuthController(Services.Abstract.IAuthenticationService authorizationService,IMapper mapper, IUserService userService)
+        public AuthController(IAuthenticationService authorizationService,IMapper mapper, IUserService userService)
         {
             _authorizationService = authorizationService;
             _mapper = mapper;
@@ -26,25 +26,26 @@ namespace InnoGotchi_backend.Controllers
         }
 
         [HttpPost]   
-        public async Task<ActionResult<string>> Login(UserDto dto)
+        public async Task<IActionResult> Login(UserDto dto)
         {
+            bool isUserValid = await _authorizationService.ValidateUser(dto.Password, dto.Email);
             //user validation
-            if (!_authorizationService.ValidateUser(dto.Password, dto.Email))
+            if (!isUserValid)
             {
                 return Unauthorized("Wrond password");
             }
 
             //create JWT token
-            string token = _authorizationService.CreateToken().Result;
+            string token = await _authorizationService.CreateToken();
 
             return Ok(token);
         }
 
         [HttpGet("user")]
         [Authorize]
-        public async Task<ActionResult<string>> GetCurrentUser()
+        public async Task<IActionResult> GetCurrentUser()
         {
-            User currentUser = _userService.GetUser(User.FindFirst(ClaimTypes.Email)?.Value);
+            User currentUser = await _userService.GetUser(User.FindFirst(ClaimTypes.Email)?.Value);
 
             return Ok(JsonSerializer.Serialize(_mapper.Map<UserDto>(currentUser)));
         }

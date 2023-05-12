@@ -13,43 +13,58 @@ namespace InnoGotchi_backend.Repositories
         {
             _db = db;
         }
-        public void Create(T entity)
+        public async Task Create(T entity)
         {
-            _db.Set<T>().Add(entity);
+            await _db.Set<T>().AddAsync(entity);
         }
 
-        public void Delete(T entity)
+        public async Task Delete(T entity)
         {
-            _db.Set<T>().Remove(entity);
+            T? entityToRemove = await _db.Set<T>().FindAsync(entity);
+
+            if (entityToRemove != null)
+            {
+                _db.Set<T>().Remove(entityToRemove);
+            }
         }
 
-        public IQueryable<T> GetAll(bool trackChanges)
+        public async Task<IQueryable<T>> GetAll(bool trackChanges)
         {
+            IQueryable<T> entities;
+
             if (!trackChanges)
             {
-                return _db.Set<T>().AsNoTracking();
+                entities = await Task.Run(() => _db.Set<T>().AsQueryable().AsNoTracking());
+
             }
             else
             {
-                return _db.Set<T>();
+                entities = await Task.Run(() => _db.Set<T>().AsQueryable());
+
             }
+
+            return entities;
         }
 
-        public IQueryable<T> GetByCondition(Expression<Func<T, bool>> expression, bool trackChanges)
+        public async Task<IQueryable<T>> GetByCondition(Expression<Func<T, bool>> expression, bool trackChanges)
         {
+            IQueryable<T> entities;
+
             if (!trackChanges)
             {
-                return _db.Set<T>().Where(expression).AsNoTracking();
+                entities = await Task.Run(() => _db.Set<T>().Where(expression).AsQueryable().AsNoTracking());
             }
             else
             {
-                return _db.Set<T>().Where(expression);
+                entities = await Task.Run(() => _db.Set<T>().Where(expression).AsQueryable());
             }
+
+            return entities; ;
         }
 
-        public void Update(T entity)
+        public async Task Update(T entity)
         {
-            _db.Set<T>().Update(entity);
+            await Task.Run(() => _db.Set<T>().Update(entity));
         }
     }
 }

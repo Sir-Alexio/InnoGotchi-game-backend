@@ -24,9 +24,9 @@ namespace InnoGotchi_backend.Controllers
 
         [HttpPost("new-farm")]
         [Authorize]
-        public ActionResult CreateFarm(FarmDto farmDto)
+        public async Task<IActionResult> CreateFarm(FarmDto farmDto)
         {
-            bool isFarmCreated = _farmService.CreateFarm(farmDto, User.FindFirst(ClaimTypes.Email).Value);
+            bool isFarmCreated = await _farmService.CreateFarm(farmDto, User.FindFirst(ClaimTypes.Email).Value);
 
             if (!isFarmCreated)
             {
@@ -38,18 +38,18 @@ namespace InnoGotchi_backend.Controllers
 
         [HttpGet("current-farm")]
         [Authorize]
-        public ActionResult GetCurrentFarm()
+        public async Task<IActionResult> GetCurrentFarm()
         {
             //Get email from claims, after user authorization
             string? email = User.FindFirst(ClaimTypes.Email)?.Value;
 
             //Get current farm
-            Farm farm = _farmService.GetFarm(email);
+            Farm farm = await _farmService.GetFarm(email);
 
             FarmDto dto = new FarmDto();
 
             //Map to data transfer object
-            dto = _mapper.Map<FarmDto>(farm);
+            dto = await Task.Run(() => _mapper.Map<FarmDto>(farm));
 
             return Ok(JsonSerializer.Serialize(dto));
         }

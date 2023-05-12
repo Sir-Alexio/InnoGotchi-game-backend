@@ -5,10 +5,10 @@ namespace InnoGotchi_backend.Repositories.Abstract
 {
     public interface IRepositoryBase<T>
     {
-        IQueryable<T> GetAll(bool trackChanges);
-        IQueryable<T> GetByCondition(Expression<Func<T, bool>> expression, bool trackChanges);
-        void Create(T entity);
-        void Update(T entity);
-        void Delete(T entity);
+        Task<IQueryable<T>> GetAll(bool trackChanges);
+        Task<IQueryable<T>> GetByCondition(Expression<Func<T, bool>> expression, bool trackChanges);
+        Task Create(T entity);
+        Task Update(T entity);
+        Task Delete(T entity);
     }
 }

@@ -51,14 +51,9 @@ namespace InnoGotchi_backend.Repositories
             }
         }
 
-        public void Save()
+        public async Task Save()
         {
-            _db.SaveChanges();
-        }
-
-        public void Attach(object obj)
-        {
-            _db.Attach(obj);
+            await _db.SaveChangesAsync();
         }
     }
 }

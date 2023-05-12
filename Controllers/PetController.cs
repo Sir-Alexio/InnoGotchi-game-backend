@@ -27,9 +27,9 @@ namespace InnoGotchi_backend.Controllers
         [HttpGet]
         [Authorize]
         [Route("current-pet/{petName}")]
-        public async Task<ActionResult<string>> GetCurrentPet(string petName)
+        public async Task<IActionResult> GetCurrentPet(string petName)
         {
-            Pet? pet = _petService.GetCurrentPet(petName);
+            Pet? pet = await _petService.GetCurrentPet(petName);
 
             if (pet == null)
             {
@@ -42,9 +42,9 @@ namespace InnoGotchi_backend.Controllers
         [HttpGet]
         [Authorize]
         [Route("all-pets")]
-        public async Task<ActionResult<string>> GetPets()
+        public async Task<IActionResult> GetPets()
         {
-            List<Pet>? pets = _petService.GetAllPets(User.FindFirst(ClaimTypes.Email).Value);
+            List<Pet>? pets = await _petService.GetAllPets(User.FindFirst(ClaimTypes.Email).Value);
 
             //Map to dtos list
             List<PetDto> dtos = _mapper.Map<List<PetDto>>(pets);
@@ -57,13 +57,13 @@ namespace InnoGotchi_backend.Controllers
         [HttpPost]
         [Authorize]
         [Route("new-pet")]
-        public ActionResult CreatePet(PetDto dto)
+        public async Task<IActionResult> CreatePet(PetDto dto)
         {
             //Get email from claims after user authorisation
-            string email = User.FindFirst(ClaimTypes.Email).Value;
+            string? email = User.FindFirst(ClaimTypes.Email).Value;
 
             //Get current farm
-            Farm currentFarm = _farmService.GetFarm(email);
+            Farm currentFarm = await _farmService.GetFarm(email);
 
             //Map to pet
             Pet pet = _mapper.Map<Pet>(dto);
@@ -71,7 +71,7 @@ namespace InnoGotchi_backend.Controllers
             pet.FarmId = currentFarm.FarmId;
 
             //Create pet
-            bool isPetCreated = _petService.CreatePet(pet);
+            bool isPetCreated = await _petService.CreatePet(pet);
 
             if (!isPetCreated)
             {
@@ -81,7 +81,7 @@ namespace InnoGotchi_backend.Controllers
             //Set alive pet counts +1 cause we created pet sucsessfuly
             currentFarm.AlivePetsCount += 1;
 
-            bool isFarmUpdated = _farmService.UpdateFarm(currentFarm);
+            bool isFarmUpdated = await _farmService.UpdateFarm(currentFarm);
 
             if (!isFarmUpdated)
             {
@@ -94,9 +94,9 @@ namespace InnoGotchi_backend.Controllers
         [HttpPatch]
         [Authorize]
         [Route("feed-current-pet")]
-        public IActionResult FeedCurrentPet(PetDto dto)
+        public async Task<IActionResult> FeedCurrentPet(PetDto dto)
         {
-            bool isPetFed =  _petService.FeedPet(dto.PetName);
+            bool isPetFed =  await _petService.FeedPet(dto.PetName);
 
             if (!isPetFed)
             {
@@ -109,9 +109,9 @@ namespace InnoGotchi_backend.Controllers
         [HttpPatch]
         [Authorize]
         [Route("give-drink")]
-        public IActionResult GiveDrink(PetDto dto)
+        public async Task<IActionResult> GiveDrink(PetDto dto)
         {
-            bool isPetDrunk = _petService.GiveDrinkToPet(dto.PetName);
+            bool isPetDrunk = await _petService.GiveDrinkToPet(dto.PetName);
             
             if (!isPetDrunk)
             {

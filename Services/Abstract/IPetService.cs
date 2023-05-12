@@ -6,10 +6,10 @@ namespace InnoGotchi_backend.Services.Abstract
 {
     public interface IPetService
     {
-        public bool CreatePet(Pet pet);
-        public List<Pet> GetAllPets(string email);
-        public Pet GetCurrentPet(string petName);
-        public bool FeedPet(string petName);
-        public bool GiveDrinkToPet(string petName);
+        public Task<bool> CreatePet(Pet pet);
+        public Task<List<Pet>> GetAllPets(string email);
+        public Task<Pet> GetCurrentPet(string petName);
+        public Task<bool> FeedPet(string petName);
+        public Task<bool> GiveDrinkToPet(string petName);
     }
 }

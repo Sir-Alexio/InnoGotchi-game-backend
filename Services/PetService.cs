@@ -18,10 +18,10 @@ namespace InnoGotchi_backend.Services
             _farmSevice = farmService;
             _mapper = mapper;
         }
-        public Pet GetCurrentPet(string petName)
+        public async Task<Pet> GetCurrentPet(string petName)
         {
             //Get current pet by name
-            Pet? pet = _repository.Pet.GetByCondition(x => x.PetName == petName, false).FirstOrDefault();
+            Pet? pet = await _repository.Pet.GetByCondition(x => x.PetName == petName, false).Result.FirstOrDefaultAsync();
 
             if (pet == null) 
             { 
@@ -30,7 +30,7 @@ namespace InnoGotchi_backend.Services
 
             return pet;
         }
-        public bool CreatePet(Pet pet)
+        public async Task<bool> CreatePet(Pet pet)
         {
             if (pet == null)
             {
@@ -38,16 +38,16 @@ namespace InnoGotchi_backend.Services
             }
             
             //Check if we already have pet with this name
-            if (_repository.Pet.GetByCondition(x => x.PetName == pet.PetName, false).FirstOrDefault() != null)
+            if (await _repository.Pet.GetByCondition(x => x.PetName == pet.PetName, false).Result.FirstOrDefaultAsync() != null)
             {
                 return false;
             }
 
-            _repository.Pet.Create(pet);
+            await _repository.Pet.Create(pet);
 
             try
             {
-                _repository.Save();
+                await _repository.Save();
             }
             catch (DbUpdateException)
             {
@@ -57,36 +57,36 @@ namespace InnoGotchi_backend.Services
             return true;
         }
 
-        public List<Pet> GetAllPets(string email)
+        public async Task<List<Pet>> GetAllPets(string email)
         {
             //Create new pet list
             List<Pet> pets = new List<Pet>();
 
             //Get current farm with user email
-            Farm? farm = _farmSevice.GetFarm(email);
+            Farm? farm = await _farmSevice.GetFarm(email);
 
             if (farm == null)
             {
                 throw new CustomExeption(message: "Farm does not exist") { StatusCode = StatusCode.DoesNotExist };
             }
 
-            pets = _repository.Pet.GetByCondition(x=>x.FarmId == farm.FarmId,false).ToList();
+            pets = await _repository.Pet.GetByCondition(x=>x.FarmId == farm.FarmId,false).Result.ToListAsync();
 
             return pets;
         }
 
-        public bool FeedPet(string petName)
+        public async Task<bool> FeedPet(string petName)
         {
             //Get pet by name
-            Pet pet = _repository.Pet.GetByCondition(x => x.PetName == petName, true).First();
+            Pet pet = await _repository.Pet.GetByCondition(x => x.PetName == petName, true).Result.FirstAsync();
 
             //Set hunger level to DateTime now
             pet.LastHungerLevel = DateTime.Now;
 
             try
             {
-                _repository.Pet.Update(pet);
-                _repository.Save();
+                await _repository.Pet.Update(pet);
+                await _repository.Save();
             }
             catch (DbUpdateException)
             {
@@ -96,17 +96,17 @@ namespace InnoGotchi_backend.Services
             return true;
         }
 
-        public bool GiveDrinkToPet(string petName)
+        public async Task<bool> GiveDrinkToPet(string petName)
         {
-            Pet pet = _repository.Pet.GetByCondition(x => x.PetName == petName, true).First();
+            Pet pet = await _repository.Pet.GetByCondition(x => x.PetName == petName, true).Result.FirstAsync();
 
             //Set Thirsty level to current time
             pet.LastThirstyLevel = DateTime.Now;
 
             try
             {
-                _repository.Pet.Update(pet);
-                _repository.Save();
+                await _repository.Pet.Update(pet);
+                await _repository.Save();
             }
             catch (DbUpdateException)
             {

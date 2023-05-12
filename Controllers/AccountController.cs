@@ -23,10 +23,10 @@ namespace InnoGotchi_backend.Controllers
         [Route("modify-user")]
         [HttpPatch]
         [Authorize]
-        public async Task<ActionResult<string>> UpdateUser(UserDto dto)
+        public async Task<IActionResult> UpdateUser(UserDto dto)
         {
             //Update User
-            bool isUserUpdated = _userService.UpdateUser(dto);
+            bool isUserUpdated = await _userService.UpdateUser(dto);
 
             if (!isUserUpdated)
             {
@@ -38,9 +38,9 @@ namespace InnoGotchi_backend.Controllers
 
         [Route("registration")]
         [HttpPost]
-        public async Task<ActionResult<string>> Register(UserDto userDto)
+        public async Task<IActionResult> Register(UserDto userDto)
         {
-            bool isUserRegistrated = _userService.Registrate(userDto);
+            bool isUserRegistrated = await _userService.Registrate(userDto);
 
             if (!isUserRegistrated)
             {
@@ -53,11 +53,11 @@ namespace InnoGotchi_backend.Controllers
         [Route("change-password")]
         [HttpPatch]
         [Authorize]
-        public async Task<ActionResult<string>> ChangePassword(ChangePasswordModel changePassword)
+        public async Task<IActionResult> ChangePassword(ChangePasswordModel changePassword)
         {
             string email = User.FindFirst(ClaimTypes.Email).Value;
 
-            bool isPasswordChanged = _userService.ChangePassword(changePassword, email);
+            bool isPasswordChanged = await _userService.ChangePassword(changePassword, email);
 
             if (!isPasswordChanged)
             {

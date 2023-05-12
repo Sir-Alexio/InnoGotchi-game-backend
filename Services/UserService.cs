@@ -21,10 +21,10 @@ namespace InnoGotchi_backend.Services
             _mapper = mapper;
         }
 
-        public List<User> GetAll()
+        public async Task<List<User>> GetAll()
         {
             //Get all users from the database
-            List<User> users = _repository.User.GetAll(trackChanges:true).ToList();
+            List<User> users = await _repository.User.GetAll(trackChanges:true).Result.ToListAsync();
 
             if (users == null)
             {
@@ -34,10 +34,10 @@ namespace InnoGotchi_backend.Services
             return users;
         }
 
-        public bool UpdateUser(UserDto dto)
+        public async Task<bool> UpdateUser(UserDto dto)
         {
             //Get user from database
-            User? user = _repository.User.GetUserByEmail(dto.Email);
+            User? user = await _repository.User.GetUserByEmail(dto.Email);
 
             if (user == null)
             {
@@ -45,15 +45,19 @@ namespace InnoGotchi_backend.Services
             }
 
             //Map UserDto to User entity
-            user = _mapper.Map<User>(dto);
 
-            //Update entity
-            _repository.User.Update(user);
+            user.UserName = dto.UserName;
+            user.FirstName = dto.FirstName;
+            user.LastName = dto.LastName;
+            user.Avatar = dto.Avatar;
 
             try
             {
+                //Update entity
+                await _repository.User.Update(user);
+
                 //Try save changes to the database
-                _repository.Save();
+                await _repository.Save();
             }
             catch (DbUpdateException)
             {
@@ -63,13 +67,15 @@ namespace InnoGotchi_backend.Services
             return true;
         }
 
-        public bool ChangePassword(ChangePasswordModel changePassword, string email)
+        public async Task<bool> ChangePassword(ChangePasswordModel changePassword, string email)
         {
             //Get current user by email
-            User? currentUser = _repository.User.GetUserByEmail(email);
+            User? currentUser = await _repository.User.GetUserByEmail(email);
+
+            bool isUserValid = await _authentication.ValidateUser(changePassword.CurrentPassword, email);
 
             //Validate old password
-            if (!_authentication.ValidateUser(changePassword.CurrentPassword, email))
+            if (!isUserValid)
             {
                 return false;
             }
@@ -83,12 +89,12 @@ namespace InnoGotchi_backend.Services
 
             currentUser.PasswordSalt = salt;
 
-            _repository.User.Update(currentUser);
+            await _repository.User.Update(currentUser);
 
             //Try update changes
             try
             {
-                _repository.Save();
+                await _repository.Save();
             }
             catch (DbUpdateException)
             {
@@ -98,23 +104,23 @@ namespace InnoGotchi_backend.Services
             return true;
         }
 
-        public bool Registrate(UserDto userDto)
+        public async Task<bool> Registrate(UserDto userDto)
         {
             //Create user in private method
             User user = MakeUser(userDto);
 
             //Check if email for user is alredy exist
-            if (_repository.User.GetUserByEmail(user.Email) != null)
+            if (await _repository.User.GetUserByEmail(user.Email) != null)
             {
                 return false;
             }
 
-            _repository.User.Create(user);
+            await _repository.User.Create(user);
 
             //Check for updating entity
             try
             {
-                _repository.Save();
+                await _repository.Save();
             }
             catch (DbUpdateException)
             {
@@ -124,9 +130,9 @@ namespace InnoGotchi_backend.Services
             return true;
         }
 
-        public User GetUser(string email)
+        public async Task<User> GetUser(string email)
         {
-            User? user = _repository.User.GetUserByEmail(email);
+            User? user = await _repository.User.GetUserByEmail(email);
 
             if (user == null)
             {

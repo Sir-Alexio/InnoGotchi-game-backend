@@ -15,10 +15,10 @@ namespace InnoGotchi_backend.Services
             _repository = repository;
         }
 
-        public bool CreateFarm(FarmDto farmDto, string email)
+        public async Task<bool> CreateFarm(FarmDto farmDto, string email)
         {
             //Get current user for creating farm
-            User? curentUser = _repository.User.GetUserByEmail(email);
+            User? curentUser = await _repository.User.GetUserByEmail(email);
 
             if (curentUser == null)
             {
@@ -26,7 +26,7 @@ namespace InnoGotchi_backend.Services
             }
             
             //Check if we already have farm with this name
-            if (_repository.Farm.GetByCondition(x=> x.FarmName == farmDto.FarmName,false).FirstOrDefault() != null)
+            if (await _repository.Farm.GetByCondition(x=> x.FarmName == farmDto.FarmName,false).Result.FirstOrDefaultAsync() != null)
             {
                 return false;
             }
@@ -37,8 +37,8 @@ namespace InnoGotchi_backend.Services
             //Update current user cause we create farm for him
             try
             {
-                _repository.User.Update(curentUser);
-                _repository.Save();
+                await _repository.User.Update(curentUser);
+                await _repository.Save();
             }
             catch (DbUpdateException)
             {
@@ -48,12 +48,12 @@ namespace InnoGotchi_backend.Services
             return true;
         }
 
-        public Farm GetFarm(string email)
+        public async Task<Farm> GetFarm(string email)
         {
             //Get current user for getting current farm
-            User? curentUser = _repository.User.GetUserByEmail(email);
+            User? curentUser = await _repository.User.GetUserByEmail(email);
 
-            Farm? farm = _repository.Farm.GetByCondition(x => x.UserId == curentUser.UserId, false).FirstOrDefault();
+            Farm? farm = await _repository.Farm.GetByCondition(x => x.UserId == curentUser.UserId, false).Result.FirstOrDefaultAsync();
 
             if (farm == null)
             {
@@ -63,13 +63,13 @@ namespace InnoGotchi_backend.Services
             return farm;
         }
 
-        public bool UpdateFarm(Farm farm)
+        public async Task<bool> UpdateFarm(Farm farm)
         {
-            _repository.Farm.Update(farm);
+            await _repository.Farm.Update(farm);
 
             try
             {
-                _repository.Save();
+                await _repository.Save();
             }
             catch (DbUpdateException)
             {
