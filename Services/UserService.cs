@@ -6,7 +6,6 @@ using InnoGotchi_backend.Repositories.Abstract;
 using InnoGotchi_backend.Services.Abstract;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace InnoGotchi_backend.Services
 {
@@ -42,7 +41,7 @@ namespace InnoGotchi_backend.Services
 
             if (user == null)
             {
-                throw new CustomExeption(message: "No user found") { StatusCode = StatusCode.DoesNotExist };
+                return false;
             }
 
             //Map UserDto to User entity
@@ -58,7 +57,7 @@ namespace InnoGotchi_backend.Services
             }
             catch (DbUpdateException)
             {
-                return false;
+                throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
 
             return true;
@@ -107,7 +106,7 @@ namespace InnoGotchi_backend.Services
             //Check if email for user is alredy exist
             if (_repository.User.GetUserByEmail(user.Email) != null)
             {
-                throw new CustomExeption(message: "This email is alredy exist") { StatusCode = StatusCode.IsAlredyExist };
+                return false;
             }
 
             _repository.User.Create(user);
@@ -119,7 +118,7 @@ namespace InnoGotchi_backend.Services
             }
             catch (DbUpdateException)
             {
-                return false;
+                throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
 
             return true;

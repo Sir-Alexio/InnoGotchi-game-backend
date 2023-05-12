@@ -1,16 +1,10 @@
-﻿using AutoMapper;
-using InnoGotchi_backend.Models;
+﻿using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Models.Dto;
-using InnoGotchi_backend.Models.Enums;
-using InnoGotchi_backend.Repositories.Abstract;
 using InnoGotchi_backend.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text.Json;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 
 namespace InnoGotchi_backend.Controllers
@@ -36,7 +30,7 @@ namespace InnoGotchi_backend.Controllers
 
             if (!isUserUpdated)
             {
-                return BadRequest("Can not update user");
+                return BadRequest("No user found");
             }
 
             return Ok(JsonSerializer.Serialize(dto));
@@ -50,7 +44,7 @@ namespace InnoGotchi_backend.Controllers
 
             if (!isUserRegistrated)
             {
-                return BadRequest("Can not registrate user");
+                return BadRequest("This email is alredy exist");
             }
 
             return Ok();

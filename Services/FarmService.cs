@@ -1,9 +1,6 @@
 ﻿using InnoGotchi_backend.Models.Dto;
 using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Repositories.Abstract;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using System.Text.Json;
 using InnoGotchi_backend.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 using InnoGotchi_backend.Services.Abstract;
@@ -18,50 +15,55 @@ namespace InnoGotchi_backend.Services
             _repository = repository;
         }
 
-        public StatusCode CreateFarm(FarmDto farmDto, string email)
+        public bool CreateFarm(FarmDto farmDto, string email)
         {
+            //Get current user for creating farm
             User? curentUser = _repository.User.GetUserByEmail(email);
 
             if (curentUser == null)
             {
-                return StatusCode.DoesNotExist;
+                throw new CustomExeption(message: "User does not exist") { StatusCode = StatusCode.DoesNotExist };
             }
-            else if (_repository.Farm.GetByCondition(x=> x.FarmName == farmDto.FarmName,false).FirstOrDefault() != null)
+            
+            //Check if we already have farm with this name
+            if (_repository.Farm.GetByCondition(x=> x.FarmName == farmDto.FarmName,false).FirstOrDefault() != null)
             {
-                return StatusCode.IsAlredyExist;
+                return false;
             }
 
+            //If everything good we create new farm
             curentUser.MyFarm = new Farm() { FarmName = farmDto.FarmName };
 
-            _repository.User.Update(curentUser);
-
+            //Update current user cause we create farm for him
             try
             {
+                _repository.User.Update(curentUser);
                 _repository.Save();
             }
             catch (DbUpdateException)
             {
-                return StatusCode.UpdateFailed;
+                throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
 
-            return StatusCode.Ok;
+            return true;
         }
 
-        public StatusCode GetFarm(string email,out Farm farm)
+        public Farm GetFarm(string email)
         {
+            //Get current user for getting current farm
             User? curentUser = _repository.User.GetUserByEmail(email);
 
-            farm = _repository.Farm.GetByCondition(x => x.UserId == curentUser.UserId, false).FirstOrDefault();
+            Farm? farm = _repository.Farm.GetByCondition(x => x.UserId == curentUser.UserId, false).FirstOrDefault();
 
             if (farm == null)
             {
-                return StatusCode.DoesNotExist;
+                throw new CustomExeption(message: "Farm does not exist") { StatusCode = StatusCode.DoesNotExist };
             }
 
-            return StatusCode.Ok;
+            return farm;
         }
 
-        public StatusCode UpdateFarm(Farm farm)
+        public bool UpdateFarm(Farm farm)
         {
             _repository.Farm.Update(farm);
 
@@ -71,10 +73,10 @@ namespace InnoGotchi_backend.Services
             }
             catch (DbUpdateException)
             {
-                return StatusCode.UpdateFailed;
+                throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
 
-            return StatusCode.Ok;
+            return true;
         }
     }
 }

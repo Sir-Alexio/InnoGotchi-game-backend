@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
 using InnoGotchi_backend.Models;
-using InnoGotchi_backend.Models.Enums;
 using InnoGotchi_backend.Models.Dto;
-using InnoGotchi_backend.Repositories.Abstract;
 using InnoGotchi_backend.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Text.Json;
@@ -17,58 +14,42 @@ namespace InnoGotchi_backend.Controllers
     public class FarmsController : ControllerBase
     {
         private readonly IFarmService _farmService;
+        private readonly IMapper _mapper;
 
-        public FarmsController(IFarmService farmService)
+        public FarmsController(IFarmService farmService,IMapper mapper)
         {
             _farmService = farmService;
+            _mapper = mapper;
         }
 
-        [HttpPost]
+        [HttpPost("new-farm")]
         [Authorize]
         public ActionResult CreateFarm(FarmDto farmDto)
         {
-            StatusCode status = _farmService.CreateFarm(farmDto, User.FindFirst(ClaimTypes.Email).Value);
+            bool isFarmCreated = _farmService.CreateFarm(farmDto, User.FindFirst(ClaimTypes.Email).Value);
 
-            switch (status)
+            if (!isFarmCreated)
             {
-                case Models.Enums.StatusCode.DoesNotExist:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("No user found")
-                    { StatusCode = Models.Enums.StatusCode.DoesNotExist }));
-
-                case Models.Enums.StatusCode.UpdateFailed:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Can not update database")
-                    { StatusCode = Models.Enums.StatusCode.UpdateFailed }));
-
-                case Models.Enums.StatusCode.IsAlredyExist:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("This farm name is already exist!")
-                    { StatusCode = Models.Enums.StatusCode.IsAlredyExist }));
-
+                return BadRequest("This farm name is already exist");
             }
 
             return Ok(JsonSerializer.Serialize(farmDto));
         }
 
-        [HttpGet]
+        [HttpGet("current-farm")]
         [Authorize]
         public ActionResult GetCurrentFarm()
         {
+            //Get email from claims, after user authorization
             string? email = User.FindFirst(ClaimTypes.Email)?.Value;
 
-            StatusCode status = _farmService.GetFarm(email,out Farm farm);
-
-            if (status == Models.Enums.StatusCode.DoesNotExist)
-            {
-                return BadRequest(JsonSerializer.Serialize(new CustomExeption("No farm found!")
-                { StatusCode = Models.Enums.StatusCode.IsAlredyExist }));
-            }
+            //Get current farm
+            Farm farm = _farmService.GetFarm(email);
 
             FarmDto dto = new FarmDto();
 
-            dto.FarmName = farm.FarmName;
-
-            dto.DeadPetsCount = farm.DeadPetsCount;
-            
-            dto.AlivePetsCount = farm.AlivePetsCount;
+            //Map to data transfer object
+            dto = _mapper.Map<FarmDto>(farm);
 
             return Ok(JsonSerializer.Serialize(dto));
         }

@@ -4,7 +4,6 @@ using System.Security.Claims;
 using InnoGotchi_backend.Services.Abstract;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
 using AutoMapper;
 using InnoGotchi_backend.Models.Dto;
 

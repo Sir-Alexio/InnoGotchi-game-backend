@@ -25,6 +25,11 @@ namespace InnoGotchi_backend.Extensions.Mapping
                 .ForMember(dest => dest.Password, opt => opt.Ignore());
 
             CreateMap<PetDto, Pet>();
+                
+            CreateMap<Farm, FarmDto>()
+                .ForMember(dest => dest.FarmName, opt => opt.MapFrom(scr => scr.FarmName))
+                .ForMember(dest => dest.DeadPetsCount, opt => opt.MapFrom(scr => scr.DeadPetsCount))
+                .ForMember(dest => dest.AlivePetsCount, opt => opt.MapFrom(scr => scr.AlivePetsCount));
 
             CreateMap<Pet, PetDto>()
            .ForMember(dest => dest.PetName, opt => opt.MapFrom(src => src.PetName))

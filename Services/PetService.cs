@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using InnoGotchi_backend.Models;
-using InnoGotchi_backend.Models.Dto;
-using InnoGotchi_backend.Models.DTOs;
 using InnoGotchi_backend.Models.Enums;
 using InnoGotchi_backend.Repositories.Abstract;
 using InnoGotchi_backend.Services.Abstract;
@@ -20,23 +18,29 @@ namespace InnoGotchi_backend.Services
             _farmSevice = farmService;
             _mapper = mapper;
         }
-        public StatusCode GetCurrentPet(string petName, out Pet? pet)
+        public Pet GetCurrentPet(string petName)
         {
-            pet = _repository.Pet.GetByCondition(x => x.PetName == petName, false).FirstOrDefault();
+            //Get current pet by name
+            Pet? pet = _repository.Pet.GetByCondition(x => x.PetName == petName, false).FirstOrDefault();
 
-            if (pet == null) { return StatusCode.DoesNotExist; }
+            if (pet == null) 
+            { 
+                throw new CustomExeption(message: "Pet does not exist") { StatusCode = StatusCode.DoesNotExist }; 
+            }
 
-            return StatusCode.Ok;
+            return pet;
         }
-        public StatusCode CreatePet(Pet pet)
+        public bool CreatePet(Pet pet)
         {
             if (pet == null)
             {
-                return StatusCode.DoesNotExist;
+                throw new CustomExeption(message: "Pet does not exist") { StatusCode = StatusCode.DoesNotExist };
             }
-            else if (_repository.Pet.GetByCondition(x => x.PetName == pet.PetName, false).FirstOrDefault() != null)
+            
+            //Check if we already have pet with this name
+            if (_repository.Pet.GetByCondition(x => x.PetName == pet.PetName, false).FirstOrDefault() != null)
             {
-                return StatusCode.IsAlredyExist;
+                return false;
             }
 
             _repository.Pet.Create(pet);
@@ -47,32 +51,36 @@ namespace InnoGotchi_backend.Services
             }
             catch (DbUpdateException)
             {
-                return StatusCode.UpdateFailed;
+                throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
 
-            return StatusCode.Ok;
+            return true;
         }
 
-        public StatusCode GetAllPets(string email, out List<Pet> pets)
+        public List<Pet> GetAllPets(string email)
         {
-            pets = new List<Pet>();
+            //Create new pet list
+            List<Pet> pets = new List<Pet>();
 
-            _farmSevice.GetFarm(email, out Farm? farm);
+            //Get current farm with user email
+            Farm? farm = _farmSevice.GetFarm(email);
 
             if (farm == null)
             {
-                return StatusCode.DoesNotExist;
+                throw new CustomExeption(message: "Farm does not exist") { StatusCode = StatusCode.DoesNotExist };
             }
 
             pets = _repository.Pet.GetByCondition(x=>x.FarmId == farm.FarmId,false).ToList();
 
-            return StatusCode.Ok;
+            return pets;
         }
 
-        public StatusCode FeedPet(string petName)
+        public bool FeedPet(string petName)
         {
+            //Get pet by name
             Pet pet = _repository.Pet.GetByCondition(x => x.PetName == petName, true).First();
 
+            //Set hunger level to DateTime now
             pet.LastHungerLevel = DateTime.Now;
 
             try
@@ -82,20 +90,17 @@ namespace InnoGotchi_backend.Services
             }
             catch (DbUpdateException)
             {
-                return StatusCode.UpdateFailed;
-            }
-            catch (InvalidOperationException)
-            {
-                return StatusCode.InsertDuplicateValue;
+                throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
 
-            return StatusCode.Ok;
+            return true;
         }
 
-        public StatusCode GiveDrinkToPet(string petName)
+        public bool GiveDrinkToPet(string petName)
         {
             Pet pet = _repository.Pet.GetByCondition(x => x.PetName == petName, true).First();
 
+            //Set Thirsty level to current time
             pet.LastThirstyLevel = DateTime.Now;
 
             try
@@ -105,14 +110,10 @@ namespace InnoGotchi_backend.Services
             }
             catch (DbUpdateException)
             {
-                return StatusCode.UpdateFailed;
-            }
-            catch (InvalidOperationException)
-            {
-                return StatusCode.InsertDuplicateValue;
+                throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
 
-            return StatusCode.Ok;
+            return true;
         }
     }
 }

@@ -1,13 +1,6 @@
 ﻿using InnoGotchi_backend.Models;
-using InnoGotchi_backend.Models.Dto;
-using InnoGotchi_backend.Models.Enums;
-using InnoGotchi_backend.Models.ErrorModel;
 using InnoGotchi_backend.Repositories.Abstract;
-using InnoGotchi_backend.Services.Abstract;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -43,6 +36,7 @@ namespace InnoGotchi_backend.Services
             {
                 throw new CustomExeption(message: "No user found") { StatusCode = Models.Enums.StatusCode.DoesNotExist };
             }
+
             if (!_repository.User.VerifyPasswordHash(password, _user.Password, _user.PasswordSalt))
             {
                 return false;

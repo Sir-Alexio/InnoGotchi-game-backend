@@ -9,7 +9,6 @@ using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 using InnoGotchi_backend.Services;
 using InnoGotchi_backend.Extensions;
-using InnoGotchi_backend.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
 using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Models.Dto;
-using InnoGotchi_backend.Models.DTOs;
-using InnoGotchi_backend.Models.Enums;
 using InnoGotchi_backend.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 

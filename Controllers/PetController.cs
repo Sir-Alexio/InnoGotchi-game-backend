@@ -1,15 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using InnoGotchi_backend.DataContext;
+﻿using Microsoft.AspNetCore.Mvc;
 using InnoGotchi_backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using InnoGotchi_backend.Models.DTOs;
 using InnoGotchi_backend.Services.Abstract;
 using System.Security.Claims;
-using InnoGotchi_backend.Models.Enums;
 using AutoMapper;
 using System.Text.Json;
-using System.ComponentModel.Design;
 
 namespace InnoGotchi_backend.Controllers
 {
@@ -33,11 +29,11 @@ namespace InnoGotchi_backend.Controllers
         [Route("current-pet/{petName}")]
         public async Task<ActionResult<string>> GetCurrentPet(string petName)
         {
-            StatusCode status = _petService.GetCurrentPet(petName, out Pet? pet);
+            Pet? pet = _petService.GetCurrentPet(petName);
 
-            if(status == Models.Enums.StatusCode.DoesNotExist) {
-                return BadRequest(JsonSerializer.Serialize(new CustomExeption("No pet found.")
-                { StatusCode = Models.Enums.StatusCode.DoesNotExist }));
+            if (pet == null)
+            {
+                return BadRequest("Can not find pet");
             }
 
             return Ok(JsonSerializer.Serialize(_mapper.Map<PetDto>(pet)));
@@ -48,14 +44,9 @@ namespace InnoGotchi_backend.Controllers
         [Route("all-pets")]
         public async Task<ActionResult<string>> GetPets()
         {
-            StatusCode status = _petService.GetAllPets(User.FindFirst(ClaimTypes.Email).Value, out List<Pet>? pets);
-            switch (status)
-            {
-                case Models.Enums.StatusCode.DoesNotExist:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("No farm found for this user")
-                    { StatusCode = Models.Enums.StatusCode.DoesNotExist }));
-            }
+            List<Pet>? pets = _petService.GetAllPets(User.FindFirst(ClaimTypes.Email).Value);
 
+            //Map to dtos list
             List<PetDto> dtos = _mapper.Map<List<PetDto>>(pets);
 
             string json = JsonSerializer.Serialize(dtos);
@@ -68,44 +59,33 @@ namespace InnoGotchi_backend.Controllers
         [Route("new-pet")]
         public ActionResult CreatePet(PetDto dto)
         {
-            Farm currentFarm = new Farm();
-
+            //Get email from claims after user authorisation
             string email = User.FindFirst(ClaimTypes.Email).Value;
 
-            _farmService.GetFarm(email,out currentFarm);
+            //Get current farm
+            Farm currentFarm = _farmService.GetFarm(email);
 
-            Pet pet = new Pet();
-
-            _mapper.Map(dto, pet);
+            //Map to pet
+            Pet pet = _mapper.Map<Pet>(dto);
 
             pet.FarmId = currentFarm.FarmId;
 
-            StatusCode status = _petService.CreatePet(pet);
+            //Create pet
+            bool isPetCreated = _petService.CreatePet(pet);
 
-            switch (status)
+            if (!isPetCreated)
             {
-                case Models.Enums.StatusCode.DoesNotExist:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("No Pet found")
-                    { StatusCode = Models.Enums.StatusCode.DoesNotExist }));
-
-                case Models.Enums.StatusCode.UpdateFailed:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Can not update database")
-                    { StatusCode = Models.Enums.StatusCode.UpdateFailed }));
-
-                case Models.Enums.StatusCode.IsAlredyExist:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("This pet name is already exist!")
-                    { StatusCode = Models.Enums.StatusCode.IsAlredyExist }));
+                return BadRequest("This pet name is already exist");
             }
-            
+
+            //Set alive pet counts +1 cause we created pet sucsessfuly
             currentFarm.AlivePetsCount += 1;
 
-            status =  _farmService.UpdateFarm(currentFarm);
+            bool isFarmUpdated = _farmService.UpdateFarm(currentFarm);
 
-            switch (status)
+            if (!isFarmUpdated)
             {
-                case Models.Enums.StatusCode.UpdateFailed:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Can not update farm table in database")
-                    { StatusCode = Models.Enums.StatusCode.UpdateFailed }));
+                return BadRequest("Can not update farm");
             }
 
             return Ok();
@@ -116,18 +96,13 @@ namespace InnoGotchi_backend.Controllers
         [Route("feed-current-pet")]
         public IActionResult FeedCurrentPet(PetDto dto)
         {
-            StatusCode status = _petService.FeedPet(dto.PetName);
+            bool isPetFed =  _petService.FeedPet(dto.PetName);
 
-            switch (status)
+            if (!isPetFed)
             {
-                case Models.Enums.StatusCode.UpdateFailed:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Can not update pet table in database")
-                    { StatusCode = Models.Enums.StatusCode.UpdateFailed }));
-
-                case Models.Enums.StatusCode.InsertDuplicateValue:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Invalid duplicated key")
-                    { StatusCode = Models.Enums.StatusCode.InsertDuplicateValue }));
+                return BadRequest("Can not feed pet");
             }
+
             return Ok();
         }
 
@@ -136,18 +111,13 @@ namespace InnoGotchi_backend.Controllers
         [Route("give-drink")]
         public IActionResult GiveDrink(PetDto dto)
         {
-            StatusCode status = _petService.GiveDrinkToPet(dto.PetName);
-
-            switch (status)
+            bool isPetDrunk = _petService.GiveDrinkToPet(dto.PetName);
+            
+            if (!isPetDrunk)
             {
-                case Models.Enums.StatusCode.UpdateFailed:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Can not update pet table in database")
-                    { StatusCode = Models.Enums.StatusCode.UpdateFailed }));
-
-                case Models.Enums.StatusCode.InsertDuplicateValue:
-                    return BadRequest(JsonSerializer.Serialize(new CustomExeption("Invalid duplicated key")
-                    { StatusCode = Models.Enums.StatusCode.InsertDuplicateValue }));
+                return BadRequest("Can not give a drink to pet");
             }
+
             return Ok();
         }
     }
