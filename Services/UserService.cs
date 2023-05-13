@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Models.Dto;
+using InnoGotchi_backend.Models.Entity;
 using InnoGotchi_backend.Models.Enums;
 using InnoGotchi_backend.Repositories.Abstract;
 using InnoGotchi_backend.Services.Abstract;
@@ -44,7 +45,7 @@ namespace InnoGotchi_backend.Services
                 return false;
             }
 
-            //Map UserDto to User entity
+            // Partial map UserDto to User entity
 
             user.UserName = dto.UserName;
             user.FirstName = dto.FirstName;

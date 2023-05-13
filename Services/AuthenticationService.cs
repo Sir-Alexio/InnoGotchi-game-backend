@@ -1,4 +1,5 @@
 ﻿using InnoGotchi_backend.Models;
+using InnoGotchi_backend.Models.Entity;
 using InnoGotchi_backend.Repositories.Abstract;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -88,6 +89,17 @@ namespace InnoGotchi_backend.Services
             );
 
             return tokenOptions;
+        }
+        public RefreshToken CreateRefreshToken()
+        {
+            RefreshToken refreshToken = new RefreshToken()
+            {
+                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+                Expires = DateTime.Now.AddDays(7),
+                Created = DateTime.Now
+            };
+
+            return refreshToken;
         }
 
     }

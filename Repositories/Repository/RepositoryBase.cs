@@ -3,7 +3,7 @@ using InnoGotchi_backend.Repositories.Abstract;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace InnoGotchi_backend.Repositories
+namespace InnoGotchi_backend.Repositories.Repository
 {
     public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace InnoGotchi_backend.Models
+namespace InnoGotchi_backend.Models.Entity
 {
     [Index(nameof(Email), IsUnique = true)]
     public class User
@@ -23,6 +23,9 @@ namespace InnoGotchi_backend.Models
         public byte[] Password { get; set; }
         [Required]
         public byte[] PasswordSalt { get; set; }
+        public string RefreshToken { get; set; } = string.Empty;
+        public DateTime TokenCreated { get; set; }
+        public DateTime TokenExpires { get; set; }
         public virtual Farm? MyFarm { get; set; }
     }
 }

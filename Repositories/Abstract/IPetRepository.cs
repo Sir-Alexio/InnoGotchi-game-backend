@@ -1,4 +1,4 @@
-﻿using InnoGotchi_backend.Models;
+﻿using InnoGotchi_backend.Models.Entity;
 
 namespace InnoGotchi_backend.Repositories.Abstract
 {

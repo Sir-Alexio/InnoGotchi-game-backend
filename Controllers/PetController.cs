@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using InnoGotchi_backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using InnoGotchi_backend.Models.DTOs;
 using InnoGotchi_backend.Services.Abstract;
 using System.Security.Claims;
 using AutoMapper;
 using System.Text.Json;
+using InnoGotchi_backend.Models.Entity;
 
 namespace InnoGotchi_backend.Controllers
 {

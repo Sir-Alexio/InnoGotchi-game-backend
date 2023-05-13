@@ -4,6 +4,7 @@ using InnoGotchi_backend.Repositories.Abstract;
 using InnoGotchi_backend.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 using InnoGotchi_backend.Services.Abstract;
+using InnoGotchi_backend.Models.Entity;
 
 namespace InnoGotchi_backend.Services
 {

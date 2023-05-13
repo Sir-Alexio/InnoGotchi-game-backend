@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace InnoGotchi_backend.Models
+namespace InnoGotchi_backend.Models.Entity
 {
     [Index(nameof(PetName), IsUnique = true)]
     public class Pet
@@ -20,7 +20,7 @@ namespace InnoGotchi_backend.Models
         public DateTime LastThirstyLevel { get; set; }
         [Required]
         public int HappyDaysCount { get; set; } = 0;
-        public string? Body { get; set; } 
+        public string? Body { get; set; }
         public string? Eyes { get; set; }
         public string? Mouth { get; set; }
         public string? Nose { get; set; }

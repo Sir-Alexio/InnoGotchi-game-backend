@@ -1,5 +1,5 @@
-﻿using InnoGotchi_backend.Models;
-using InnoGotchi_backend.Models.Dto;
+﻿using InnoGotchi_backend.Models.Dto;
+using InnoGotchi_backend.Models.Entity;
 using InnoGotchi_backend.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

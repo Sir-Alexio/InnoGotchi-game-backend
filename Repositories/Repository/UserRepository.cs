@@ -1,11 +1,11 @@
 ﻿using InnoGotchi_backend.DataContext;
-using InnoGotchi_backend.Models;
+using InnoGotchi_backend.Models.Entity;
 using InnoGotchi_backend.Repositories.Abstract;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
-namespace InnoGotchi_backend.Repositories
+namespace InnoGotchi_backend.Repositories.Repository
 {
 
     public class UserRepository : RepositoryBase<User>, IUserRepository
@@ -16,6 +16,6 @@ namespace InnoGotchi_backend.Repositories
         {
             User? user = await GetByCondition(s => s.Email == email, false).Result.FirstOrDefaultAsync();
             return user;
-        } 
+        }
     }
 }

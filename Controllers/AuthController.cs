@@ -1,11 +1,11 @@
-﻿using InnoGotchi_backend.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using InnoGotchi_backend.Services.Abstract;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using InnoGotchi_backend.Models.Dto;
+using InnoGotchi_backend.Models.Entity;
 
 namespace InnoGotchi_backend.Controllers
 {
@@ -38,6 +38,18 @@ namespace InnoGotchi_backend.Controllers
             //create JWT token
             string token = await _authorizationService.CreateToken();
 
+            RefreshToken refreshToken = _authorizationService.CreateRefreshToken();
+
+            SetRefreshToken(refreshToken);
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(1)
+            };
+
+            Response.Cookies.Append("token", token, cookieOptions);
+
             return Ok(token);
         }
 
@@ -48,6 +60,18 @@ namespace InnoGotchi_backend.Controllers
             User currentUser = await _userService.GetUser(User.FindFirst(ClaimTypes.Email)?.Value);
 
             return Ok(JsonSerializer.Serialize(_mapper.Map<UserDto>(currentUser)));
+        }
+
+        private void SetRefreshToken(RefreshToken refreshToken)
+        {
+            var cookieOptions = new CookieOptions()
+            {
+                HttpOnly = true,
+                Expires = refreshToken.Expires
+            };
+
+            Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
+
         }
     }
 }

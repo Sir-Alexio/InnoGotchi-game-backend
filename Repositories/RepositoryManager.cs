@@ -1,5 +1,6 @@
 ﻿using InnoGotchi_backend.DataContext;
 using InnoGotchi_backend.Repositories.Abstract;
+using InnoGotchi_backend.Repositories.Repository;
 
 namespace InnoGotchi_backend.Repositories
 {

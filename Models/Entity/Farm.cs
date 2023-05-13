@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace InnoGotchi_backend.Models
+namespace InnoGotchi_backend.Models.Entity
 {
     [Index(nameof(FarmName), IsUnique = true)]
     public class Farm
