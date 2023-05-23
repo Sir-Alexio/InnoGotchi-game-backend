@@ -142,6 +142,25 @@ namespace InnoGotchi_backend.Services
 
             return user;
         }
+        public async Task SetRefreshTokenToUser(RefreshToken refreshToken, string email)
+        {
+            User? user = await _repository.User.GetUserByEmail(email);
+
+            user.RefreshToken = refreshToken.Token;
+            user.TokenCreated = refreshToken.Created;
+            user.TokenExpires = refreshToken.Expires;
+
+            await _repository.User.Update(user);
+
+            try
+            {
+                await _repository.Save();
+            }
+            catch (DbUpdateException)
+            {
+                throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
+            }
+        }
 
         //Private method for creating new user
         private User MakeUser(UserDto dto)

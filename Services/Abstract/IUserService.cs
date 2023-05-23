@@ -10,5 +10,6 @@ namespace InnoGotchi_backend.Services.Abstract
         public Task<bool> ChangePassword(ChangePasswordModel changePassword, string email);
         public Task<User> GetUser(string email);
         public Task<List<User>> GetAll();
+        public Task SetRefreshTokenToUser(RefreshToken refreshToken, string email);
     }
 }
