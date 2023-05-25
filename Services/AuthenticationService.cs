@@ -85,6 +85,7 @@ namespace InnoGotchi_backend.Services
             claims: claims,
             expires:
             DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings.GetSection("expires").Value)),
+
             signingCredentials: signingCredentials
             );
 

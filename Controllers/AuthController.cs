@@ -56,8 +56,10 @@ namespace InnoGotchi_backend.Controllers
             //get from request header refresh token
             string? refreshToken = Request.Cookies["refreshToken"];
 
+            string? email = User.FindFirst(ClaimTypes.Email)?.Value;
+
             //get current user
-            User currentUser = await _userService.GetUser(User.FindFirst(ClaimTypes.Email)?.Value);
+            User currentUser = await _userService.GetUser(email);
 
             //check if old refresh token is valid
             if (!currentUser.RefreshToken.Equals(refreshToken))
@@ -68,7 +70,7 @@ namespace InnoGotchi_backend.Controllers
             {
                 return Unauthorized("Token expires");
             }
-
+            
             //create jwt token
             string token = await _authorizationService.CreateToken();
 
@@ -99,8 +101,9 @@ namespace InnoGotchi_backend.Controllers
             //create cookie optons
             var cookieOptions = new CookieOptions()
             {
-                HttpOnly = true,
-                Expires = refreshToken.Expires
+                HttpOnly = false,
+                Secure = false,
+                Expires = DateTime.Now.AddDays(20)
             };
 
             //set refresh token to response headers
