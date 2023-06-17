@@ -34,5 +34,13 @@ namespace InnoGotchi_backend.Controllers
 
             return Ok(json);
         }
+
+        [Authorize]
+        [HttpGet]
+        [Route("user-info/{email}")]
+        public async Task<IActionResult> GetUserInfo(string email)
+        {
+            return Ok();
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿    using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using InnoGotchi_backend.Services.Abstract;
 using System.Text.Json;
@@ -25,7 +25,7 @@ namespace InnoGotchi_backend.Controllers
             _userService = userService;
         }
 
-        [HttpPost]   
+        [HttpPost("login")]   
         public async Task<IActionResult> Login(UserDto dto)
         {
             bool isUserValid = await _authorizationService.ValidateUser(dto.Password, dto.Email);
@@ -43,7 +43,7 @@ namespace InnoGotchi_backend.Controllers
             RefreshToken refreshToken = _authorizationService.CreateRefreshToken();
 
             //set refresh token to responce header and to user database
-            await SetRefreshToken(refreshToken,dto.Email);
+            //await SetRefreshToken(refreshToken,dto.Email);
 
             //send to client jwt token
             return Ok(token);
@@ -51,11 +51,8 @@ namespace InnoGotchi_backend.Controllers
 
         [HttpPost("refresh-token")]
         [Authorize]
-        public async Task<ActionResult<string>> RefreshToken()
+        public async Task<ActionResult<string>> RefreshToken(string refreshToken)
         {
-            //get from request header refresh token
-            string? refreshToken = Request.Cookies["refreshToken"];
-
             string? email = User.FindFirst(ClaimTypes.Email)?.Value;
 
             //get current user
@@ -64,7 +61,7 @@ namespace InnoGotchi_backend.Controllers
             //check if old refresh token is valid
             if (!currentUser.RefreshToken.Equals(refreshToken))
             {
-                return Unauthorized("invalid refresh token");
+                //return Unauthorized("invalid refresh token");
             }
             else if (currentUser.TokenExpires < DateTime.Now)
             {
@@ -78,7 +75,7 @@ namespace InnoGotchi_backend.Controllers
             RefreshToken newRefreshToken = _authorizationService.CreateRefreshToken();
 
             //set refresh token to current user(update database)
-            await SetRefreshToken(newRefreshToken, User.FindFirst(ClaimTypes.Email)?.Value);
+            //await SetRefreshToken(newRefreshToken, User.FindFirst(ClaimTypes.Email)?.Value);
 
             //setd jwt token
             return Ok(token);
@@ -96,14 +93,13 @@ namespace InnoGotchi_backend.Controllers
         private async Task SetRefreshToken(RefreshToken refreshToken,string email)
         {
             //set refresh token to database
-            await _userService.SetRefreshTokenToUser(refreshToken, email);
+            //await _userService.SetRefreshTokenToUser(refreshToken, email);
 
             //create cookie optons
             var cookieOptions = new CookieOptions()
             {
-                HttpOnly = false,
-                Secure = false,
-                Expires = DateTime.Now.AddDays(20)
+                HttpOnly = true,
+                Expires = DateTime.Now.AddDays(7)
             };
 
             //set refresh token to response headers

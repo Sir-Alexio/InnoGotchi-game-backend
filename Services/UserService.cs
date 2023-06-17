@@ -5,6 +5,7 @@ using InnoGotchi_backend.Models.Entity;
 using InnoGotchi_backend.Models.Enums;
 using InnoGotchi_backend.Repositories.Abstract;
 using InnoGotchi_backend.Services.Abstract;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
@@ -20,6 +21,12 @@ namespace InnoGotchi_backend.Services
             _repository = repository;
             _authentication = authentication;
             _mapper = mapper;
+        }
+
+        public async Task<List<User>> GetUsersWithNoInvited(string email)
+        {
+            //TO DO
+            //get users without owner and invited people
         }
 
         public async Task<List<User>> GetAll()
