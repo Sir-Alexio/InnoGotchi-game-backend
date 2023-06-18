@@ -25,8 +25,28 @@ namespace InnoGotchi_backend.Services
 
         public async Task<List<User>> GetUsersWithNoInvited(string email)
         {
-            //TO DO
-            //get users without owner and invited people
+            //Get from data base all users
+            List<User> allUsersWithNoInvited =  await _repository.User.GetAll(trackChanges: false).Result.ToListAsync();
+
+            //Get from data base current user
+            User? currentUser = await _repository.User.GetUserWithColaboratorsAsync(email);
+
+            //Check current user
+            if (currentUser == null)
+            {
+                throw new CustomExeption(message: "No user found") { StatusCode = StatusCode.DoesNotExist };
+            }
+
+            //mistake here
+            //Get current user collaborators
+            List<User>? invitedUsers = currentUser.MyColaborators.ToList();
+
+            //Remove invited and current users
+            allUsersWithNoInvited.RemoveAll(user => invitedUsers.Contains(user));
+
+            allUsersWithNoInvited.Remove(currentUser);
+
+            return allUsersWithNoInvited;
         }
 
         public async Task<List<User>> GetAll()
@@ -161,6 +181,33 @@ namespace InnoGotchi_backend.Services
 
             try
             {
+                await _repository.Save();
+            }
+            catch (DbUpdateException)
+            {
+                throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
+            }
+        }
+
+        public async Task InviteUserToColab(string invitedUserEmail, string currentUserEmail)
+        {
+            //Get users from data base
+            User? currentUser = await _repository.User.GetUserByEmail(currentUserEmail);
+            User? invitedUser = await _repository.User.GetUserByEmail(invitedUserEmail);
+
+            //Check if user have colaborators
+            if (currentUser.MyColaborators == null)
+            {
+                currentUser.MyColaborators = new List<User>();
+            }
+
+            //Add colaborator
+            currentUser.MyColaborators.Add(invitedUser);
+
+            //Try to save
+            try
+            {
+                await _repository.User.Update(currentUser);
                 await _repository.Save();
             }
             catch (DbUpdateException)

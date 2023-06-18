@@ -14,8 +14,18 @@ namespace InnoGotchi_backend.Repositories.Repository
 
         public async Task<User?> GetUserByEmail(string email)
         {
-            User? user = await GetByCondition(s => s.Email == email, false).Result.FirstOrDefaultAsync();
+            User? user = await base.GetByCondition(s => s.Email == email, false).Result.FirstOrDefaultAsync();
             return user;
+        }
+        public async Task<User?> GetUserWithColaboratorsAsync(string email)
+        {
+            User? user = await _db.Users.Include(u=>u.MyColaborators).FirstOrDefaultAsync(u=>u.Email == email);
+            return user;
+        }
+
+        public async override Task<IQueryable<User>> GetAll(bool trackChanges)
+        {
+            return _db.Users.Include(u => u.MyColaborators).AsQueryable();
         }
     }
 }

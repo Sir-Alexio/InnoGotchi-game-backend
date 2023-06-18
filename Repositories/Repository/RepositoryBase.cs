@@ -7,7 +7,7 @@ namespace InnoGotchi_backend.Repositories.Repository
 {
     public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
-        private readonly ApplicationContext _db;
+        protected readonly ApplicationContext _db;
 
         public RepositoryBase(ApplicationContext db)
         {
@@ -28,7 +28,7 @@ namespace InnoGotchi_backend.Repositories.Repository
             }
         }
 
-        public async Task<IQueryable<T>> GetAll(bool trackChanges)
+        public virtual async Task<IQueryable<T>> GetAll(bool trackChanges)
         {
             IQueryable<T> entities;
 

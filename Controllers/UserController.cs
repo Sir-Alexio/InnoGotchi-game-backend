@@ -4,6 +4,7 @@ using InnoGotchi_backend.Models.Entity;
 using InnoGotchi_backend.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace InnoGotchi_backend.Controllers
@@ -37,9 +38,25 @@ namespace InnoGotchi_backend.Controllers
 
         [Authorize]
         [HttpGet]
-        [Route("user-info/{email}")]
-        public async Task<IActionResult> GetUserInfo(string email)
+        [Route("users-with-no-invited")]
+        public async Task<IActionResult> GetUsersWhithoutInvited()
         {
+            List<User> users = await _userService.GetUsersWithNoInvited(User.FindFirst(ClaimTypes.Email).Value);
+
+            List<UserDto> dtos = _mapper.Map<List<UserDto>>(users);
+
+            string json = JsonSerializer.Serialize(dtos);
+
+            return Ok(json);
+        }
+
+        [Authorize]
+        [HttpPatch]
+        [Route("invite-user")]
+        public async Task<IActionResult> GetUserInfo(string inviteUserEmail)
+        {
+            await _userService.InviteUserToColab(invitedUserEmail:inviteUserEmail,
+                                                currentUserEmail: User.FindFirst(ClaimTypes.Email).Value);
             return Ok();
         }
     }

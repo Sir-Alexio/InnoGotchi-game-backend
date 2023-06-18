@@ -11,6 +11,7 @@ namespace InnoGotchi_backend.Services.Abstract
         public Task<User> GetUser(string email);
         public Task<List<User>> GetAll();
         public Task SetRefreshTokenToUser(RefreshToken refreshToken, string email);
-        public Task<List<User>> GetUsersWithNoInvited(string email)
+        public Task<List<User>> GetUsersWithNoInvited(string email);
+        public Task InviteUserToColab(string invitedUserEmail, string currentUserEmail);
     }
 }
