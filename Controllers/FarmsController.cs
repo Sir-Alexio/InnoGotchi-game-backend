@@ -14,12 +14,14 @@ namespace InnoGotchi_backend.Controllers
     public class FarmsController : ControllerBase
     {
         private readonly IFarmService _farmService;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
 
-        public FarmsController(IFarmService farmService,IMapper mapper)
+        public FarmsController(IFarmService farmService,IMapper mapper, IUserService userService)
         {
             _farmService = farmService;
             _mapper = mapper;
+            _userService = userService;
         }
 
         [HttpPost("new-farm")]
@@ -50,6 +52,25 @@ namespace InnoGotchi_backend.Controllers
 
             //Map to data transfer object
             dto = await Task.Run(() => _mapper.Map<FarmDto>(farm));
+
+            return Ok(JsonSerializer.Serialize(dto));
+        }
+
+        [Authorize]
+        [HttpGet("foreign-farm/{email}")]
+        public async Task<IActionResult> GetForeignFarm(string email)
+        {
+            List<User> iAmCollab = await _userService.GetUsersIAmCollab(User.FindFirst(ClaimTypes.Email)?.Value);
+
+            User foreignUser = await _userService.GetUser(email);
+
+            if (foreignUser == null) { return NotFound(); }
+
+            if (!iAmCollab.Contains(foreignUser)) { return Unauthorized(); }
+
+            Farm foreignFarm = await _farmService.GetFarm(email);
+
+            FarmDto dto = _mapper.Map<FarmDto>(foreignFarm);
 
             return Ok(JsonSerializer.Serialize(dto));
         }

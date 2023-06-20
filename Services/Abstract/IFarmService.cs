@@ -8,5 +8,6 @@ namespace InnoGotchi_backend.Services.Abstract
         public Task<bool> CreateFarm(FarmDto farmDto, string email);
         public Task<Farm> GetFarm(string email);
         public Task<bool> UpdateFarm(Farm farm);
+        public Task<Farm> GetFarmByName(string farmName);
     }
 }

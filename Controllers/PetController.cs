@@ -54,6 +54,21 @@ namespace InnoGotchi_backend.Controllers
             return Ok(json);
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("foreign-all-pets/{farmName}")]
+        public async Task<IActionResult> GetForeignPets(string farmName)
+        {
+            List<Pet>? pets = await _petService.GetAllPetsByFarm(farmName);
+
+            //Map to dtos list
+            List<PetDto> dtos = _mapper.Map<List<PetDto>>(pets);
+
+            string json = JsonSerializer.Serialize(dtos);
+
+            return Ok(json);
+        }
+
         [HttpPost]
         [Authorize]
         [Route("new-pet")]

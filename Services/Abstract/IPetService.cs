@@ -11,5 +11,6 @@ namespace InnoGotchi_backend.Services.Abstract
         public Task<Pet> GetCurrentPet(string petName);
         public Task<bool> FeedPet(string petName);
         public Task<bool> GiveDrinkToPet(string petName);
+        public Task<List<Pet>> GetAllPetsByFarm(string farmName);
     }
 }

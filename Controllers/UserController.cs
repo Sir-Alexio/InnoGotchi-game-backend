@@ -41,8 +41,10 @@ namespace InnoGotchi_backend.Controllers
         [Route("users-with-no-invited")]
         public async Task<IActionResult> GetUsersWhithoutInvited()
         {
+            //Get users without colaborators and yourself
             List<User> users = await _userService.GetUsersWithNoInvited(User.FindFirst(ClaimTypes.Email).Value);
 
+            //Map it
             List<UserDto> dtos = _mapper.Map<List<UserDto>>(users);
 
             string json = JsonSerializer.Serialize(dtos);
@@ -58,6 +60,47 @@ namespace InnoGotchi_backend.Controllers
             await _userService.InviteUserToColab(invitedUserEmail:inviteUserEmail,
                                                 currentUserEmail: User.FindFirst(ClaimTypes.Email).Value);
             return Ok();
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("find-user/{email}")]
+        public async Task<IActionResult> FindUsers(string email)
+        {
+            User user = await _userService.GetUser(email: email);
+
+            UserDto dto = _mapper.Map<UserDto>(user);
+            
+            List<UserDto> users = new List<UserDto>
+            {
+                dto
+            };
+
+            return Ok(JsonSerializer.Serialize(users));
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("collaborators")]
+        public async Task<IActionResult> GetCollaborators()
+        {
+            List<User> collaborators = await _userService.GetCollaborators(email: User.FindFirst(ClaimTypes.Email).Value);
+
+            List<UserDto> dtos = _mapper.Map<List<UserDto>>(collaborators);
+
+            return Ok(JsonSerializer.Serialize(dtos));
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("i-am-collaborator")]
+        public async Task<IActionResult> GetUsersWhereIAmCollaborator()
+        {
+            List<User> collaborators = await _userService.GetUsersIAmCollab(email: User.FindFirst(ClaimTypes.Email).Value);
+
+            List<UserDto> dtos = _mapper.Map<List<UserDto>>(collaborators);
+
+            return Ok(JsonSerializer.Serialize(dtos));
         }
     }
 }

@@ -76,6 +76,24 @@ namespace InnoGotchi_backend.Services
             return pets;
         }
 
+        public async Task<List<Pet>> GetAllPetsByFarm(string farmName)
+        {
+            //Create new pet list
+            List<Pet> pets = new List<Pet>();
+
+            //Get current farm with user email
+            Farm? farm = await _farmSevice.GetFarmByName(farmName);
+
+            if (farm == null)
+            {
+                throw new CustomExeption(message: "Farm does not exist") { StatusCode = StatusCode.DoesNotExist };
+            }
+
+            pets = await _repository.Pet.GetByCondition(x => x.FarmId == farm.FarmId, false).Result.ToListAsync();
+
+            return pets;
+        }
+
         public async Task<bool> FeedPet(string petName)
         {
             //Get pet by name

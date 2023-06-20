@@ -23,6 +23,12 @@ namespace InnoGotchi_backend.Repositories.Repository
             return user;
         }
 
+        public async Task<User?> GetUserWithIAmCollaborator(string email)
+        {
+            User? user = await _db.Users.Include(u => u.IAmColaborator).FirstOrDefaultAsync(u => u.Email == email);
+            return user;
+        }
+
         public async override Task<IQueryable<User>> GetAll(bool trackChanges)
         {
             return _db.Users.Include(u => u.MyColaborators).AsQueryable();

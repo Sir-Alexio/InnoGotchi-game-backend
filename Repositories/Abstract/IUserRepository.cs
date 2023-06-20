@@ -6,5 +6,6 @@ namespace InnoGotchi_backend.Repositories.Abstract
     {
         public Task<User?> GetUserByEmail(string email);
         public Task<User?> GetUserWithColaboratorsAsync(string email);
+        public Task<User?> GetUserWithIAmCollaborator(string email);
     }
 }

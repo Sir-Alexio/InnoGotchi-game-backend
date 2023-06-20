@@ -64,6 +64,18 @@ namespace InnoGotchi_backend.Services
             return farm;
         }
 
+        public async Task<Farm> GetFarmByName(string farmName)
+        {
+            Farm? farm = await _repository.Farm.GetByCondition(x => x.FarmName==farmName, false).Result.FirstOrDefaultAsync();
+
+            if (farm == null)
+            {
+                throw new CustomExeption(message: "Farm does not exist") { StatusCode = StatusCode.DoesNotExist };
+            }
+
+            return farm;
+        }
+
         public async Task<bool> UpdateFarm(Farm farm)
         {
             await _repository.Farm.Update(farm);

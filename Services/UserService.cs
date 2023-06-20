@@ -37,7 +37,6 @@ namespace InnoGotchi_backend.Services
                 throw new CustomExeption(message: "No user found") { StatusCode = StatusCode.DoesNotExist };
             }
 
-            //mistake here
             //Get current user collaborators
             List<User>? invitedUsers = currentUser.MyColaborators.ToList();
 
@@ -160,7 +159,7 @@ namespace InnoGotchi_backend.Services
 
         public async Task<User> GetUser(string email)
         {
-            User? user = await _repository.User.GetUserByEmail(email);
+            User? user = await _repository.User.GetUserWithColaboratorsAsync(email);
 
             if (user == null)
             {
@@ -169,6 +168,31 @@ namespace InnoGotchi_backend.Services
 
             return user;
         }
+
+        public async Task<List<User>> GetCollaborators(string email)
+        {
+            User? user = await _repository.User.GetUserWithColaboratorsAsync(email);
+
+            if (user.MyColaborators == null)
+            {
+                return new List<User>();
+            }
+
+            return user.MyColaborators.ToList();
+        }
+
+        public async Task<List<User>> GetUsersIAmCollab(string email)
+        {
+            User? user = await _repository.User.GetUserWithIAmCollaborator(email);
+
+            if (user.IAmColaborator == null)
+            {
+                return new List<User>();
+            }
+
+            return user.IAmColaborator.ToList();
+        }
+
         public async Task SetRefreshTokenToUser(RefreshToken refreshToken, string email)
         {
             User? user = await _repository.User.GetUserByEmail(email);
