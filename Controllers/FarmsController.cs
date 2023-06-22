@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using InnoGotchi_backend.Models.Dto;
+using InnoGotchi_backend.Models.DTOs;
 using InnoGotchi_backend.Models.Entity;
 using InnoGotchi_backend.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
@@ -15,13 +16,15 @@ namespace InnoGotchi_backend.Controllers
     {
         private readonly IFarmService _farmService;
         private readonly IUserService _userService;
+        private readonly IPetService _petService;
         private readonly IMapper _mapper;
 
-        public FarmsController(IFarmService farmService,IMapper mapper, IUserService userService)
+        public FarmsController(IFarmService farmService,IMapper mapper, IUserService userService, IPetService petService)
         {
             _farmService = farmService;
             _mapper = mapper;
             _userService = userService;
+            _petService = petService;
         }
 
         [HttpPost("new-farm")]
@@ -73,6 +76,52 @@ namespace InnoGotchi_backend.Controllers
             FarmDto dto = _mapper.Map<FarmDto>(foreignFarm);
 
             return Ok(JsonSerializer.Serialize(dto));
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("statistic")]
+        public async Task<IActionResult> GetFarmStatistic()
+        {
+            StatisticDto statistic = new StatisticDto();
+
+            List<Pet> pets = await _petService.GetAllPets(User.FindFirst(ClaimTypes.Email)?.Value);
+
+            statistic.AlivePetCount = pets.Count(x => DateTime.Now.Subtract(x.LastHungerLevel).Days <= 2 && DateTime.Now.Subtract(x.LastThirstyLevel).Days <= 2);
+            statistic.DeadPetCount = pets.Count(x => DateTime.Now.Subtract(x.LastHungerLevel).Days > 2 || DateTime.Now.Subtract(x.LastThirstyLevel).Days > 2);
+
+            foreach (Pet pet  in pets)
+            {
+                int totalFeedDays = 0;
+                int totalDrinkDays = 0;
+
+                List<PetFeeding> feedings = pet.Feedings.ToList();
+                List<PetDrinking> drinking = pet.Drinkings.ToList();
+
+                for (int i = 0; i < feedings.Count; i++)
+                {
+                    if (i == feedings.Count-1)
+                    {
+                        break;
+                    }
+
+                    totalFeedDays += (int)feedings[i + 1].FeedDate.Subtract(feedings[i].FeedDate).TotalDays;
+                }
+
+                for (int i = 0; i < drinking.Count; i++)
+                {
+                    if (i == drinking.Count - 1)
+                    {
+                        break;
+                    }
+
+                    totalDrinkDays += (int)drinking[i + 1].DrinkDate.Subtract(drinking[i].DrinkDate).TotalDays;
+                }
+            }
+            //To do farm statistic
+
+            return Ok(JsonSerializer.Serialize(statistic));
+
         }
     }
 }

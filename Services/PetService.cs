@@ -14,7 +14,7 @@ namespace InnoGotchi_backend.Services
         private readonly IRepositoryManager _repository;
         private readonly IFarmService _farmSevice;
         private readonly IMapper _mapper;
-        public PetService(IRepositoryManager repository, IFarmService farmService,IMapper mapper)
+        public PetService(IRepositoryManager repository, IFarmService farmService, IMapper mapper)
         {
             _repository = repository;
             _farmSevice = farmService;
@@ -37,7 +37,7 @@ namespace InnoGotchi_backend.Services
             {
                 if (DateTime.Now.Subtract(pet.LastHappyDaysCountUpdated).Days < 1) { continue; }
 
-                if (DateTime.Now.Subtract(pet.LastHungerLevel).Days>=2 && DateTime.Now.Subtract(pet.LastThirstyLevel).Days >= 2) { continue; }
+                if (DateTime.Now.Subtract(pet.LastHungerLevel).Days >= 2 && DateTime.Now.Subtract(pet.LastThirstyLevel).Days >= 2) { continue; }
 
                 pet.LastHappyDaysCountUpdated = DateTime.Now;
 
@@ -55,9 +55,9 @@ namespace InnoGotchi_backend.Services
             //Get current pet by name
             Pet? pet = await _repository.Pet.GetByCondition(x => x.PetName == petName, false).Result.FirstOrDefaultAsync();
 
-            if (pet == null) 
-            { 
-                throw new CustomExeption(message: "Pet does not exist") { StatusCode = StatusCode.DoesNotExist }; 
+            if (pet == null)
+            {
+                throw new CustomExeption(message: "Pet does not exist") { StatusCode = StatusCode.DoesNotExist };
             }
 
             return pet;
@@ -68,7 +68,7 @@ namespace InnoGotchi_backend.Services
             {
                 throw new CustomExeption(message: "Pet does not exist") { StatusCode = StatusCode.DoesNotExist };
             }
-            
+
             //Check if we already have pet with this name
             if (await _repository.Pet.GetByCondition(x => x.PetName == pet.PetName, false).Result.FirstOrDefaultAsync() != null)
             {
@@ -102,7 +102,7 @@ namespace InnoGotchi_backend.Services
                 throw new CustomExeption(message: "Farm does not exist") { StatusCode = StatusCode.DoesNotExist };
             }
 
-            pets = await _repository.Pet.GetByCondition(x=>x.FarmId == farm.FarmId,false).Result.ToListAsync();
+            pets = await _repository.Pet.GetByCondition(x => x.FarmId == farm.FarmId, false).Result.ToListAsync();
 
             await CalculateHappyDaysCount(pets);
 
@@ -137,6 +137,7 @@ namespace InnoGotchi_backend.Services
             //Set hunger level to DateTime now
             pet.LastHungerLevel = DateTime.Now;
 
+            await SaveFeedInformation(pet);
             try
             {
                 await _repository.Pet.Update(pet);
@@ -157,6 +158,8 @@ namespace InnoGotchi_backend.Services
             //Set Thirsty level to current time
             pet.LastThirstyLevel = DateTime.Now;
 
+            await SaveDrinkInformation(pet);
+
             try
             {
                 await _repository.Pet.Update(pet);
@@ -168,6 +171,28 @@ namespace InnoGotchi_backend.Services
             }
 
             return true;
+        }
+
+        private async Task SaveFeedInformation(Pet pet)
+        {
+            PetFeeding petFeeding = new PetFeeding();
+
+            petFeeding.FeedDate = DateTime.Now;
+
+            petFeeding.MyPet = pet;
+
+            await _repository.PetFeeding.Create(petFeeding);
+        }
+
+        private async Task SaveDrinkInformation(Pet pet)
+        {
+            PetDrinking petDrinking = new PetDrinking();
+
+            petDrinking.DrinkDate = DateTime.Now;
+
+            petDrinking.MyPet = pet;
+
+            await _repository.PetDrinking.Create(petDrinking);
         }
     }
 }

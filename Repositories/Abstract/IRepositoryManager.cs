@@ -7,6 +7,9 @@ namespace InnoGotchi_backend.Repositories.Abstract
         IUserRepository User { get; }
         IFarmRepository Farm { get; }
         IPetRepository Pet { get; }
+        IPetFeedingRepository PetFeeding { get; }
+        IPetDrinkingRepository PetDrinking { get; }
+
         Task Save();
     }
 }

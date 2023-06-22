@@ -10,6 +10,8 @@ namespace InnoGotchi_backend.Repositories
         private IUserRepository _userRepository;
         private IFarmRepository _farmRepository;
         private IPetRepository _petRepository;
+        private IPetFeedingRepository _petFeedingRepository;
+        private IPetDrinkingRepository _petDrinkingRepository;
         public RepositoryManager(ApplicationContext db)
         {
             _db = db;
@@ -49,6 +51,30 @@ namespace InnoGotchi_backend.Repositories
                     _petRepository = new PetRepository(_db);
                 }
                 return _petRepository;
+            }
+        }
+
+        public IPetFeedingRepository PetFeeding
+        {
+            get
+            {
+                if (_petFeedingRepository == null)
+                {
+                    _petFeedingRepository = new PetFeedingRepository(_db);
+                }
+                return _petFeedingRepository;
+            }
+        }
+
+        public IPetDrinkingRepository PetDrinking
+        {
+            get
+            {
+                if (_petDrinkingRepository == null)
+                {
+                    _petDrinkingRepository = new PetDrinkingRepository(_db);
+                }
+                return _petDrinkingRepository;
             }
         }
 
