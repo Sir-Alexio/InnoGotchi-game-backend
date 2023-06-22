@@ -41,7 +41,7 @@ namespace InnoGotchi_backend.Models.DTOs
 
         public int GetAge()
         {
-            return DateTime.Now.Subtract(this.AgeDate).Days;
+            return DateTime.Now.Subtract(this.AgeDate).Days/7;
         }
 
         public ThirstyLevel GetThirstyLevel()

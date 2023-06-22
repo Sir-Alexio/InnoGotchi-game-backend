@@ -193,6 +193,30 @@ namespace InnoGotchi_backend.Services
             return user.IAmColaborator.ToList();
         }
 
+        public async Task DeleteCollaborator(string myEmail,string deleteEmail)
+        {
+            User? user = await _repository.User.GetUserWithColaboratorsAsync(myEmail);
+
+            User? deleteUser = await _repository.User.GetUserWithIAmCollaborator(deleteEmail);
+
+            if (!user.MyColaborators.Contains(deleteUser))
+            {
+                throw new CustomExeption(message:$"No collaborator with name {deleteEmail}.") { StatusCode = StatusCode.DoesNotExist };
+            }
+
+            user.MyColaborators.Remove(deleteUser);
+
+            try
+            {
+                await _repository.User.Update(user);
+                await _repository.Save();
+            }
+            catch (DbUpdateException)
+            {
+                throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
+            }
+        }
+
         public async Task SetRefreshTokenToUser(RefreshToken refreshToken, string email)
         {
             User? user = await _repository.User.GetUserByEmail(email);

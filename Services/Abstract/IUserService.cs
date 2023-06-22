@@ -15,5 +15,6 @@ namespace InnoGotchi_backend.Services.Abstract
         public Task InviteUserToColab(string invitedUserEmail, string currentUserEmail);
         public  Task<List<User>> GetCollaborators(string email);
         public Task<List<User>> GetUsersIAmCollab(string email);
+        public Task DeleteCollaborator(string myEmail, string deleteEmail);
     }
 }

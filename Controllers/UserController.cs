@@ -102,5 +102,15 @@ namespace InnoGotchi_backend.Controllers
 
             return Ok(JsonSerializer.Serialize(dtos));
         }
+
+        [Authorize]
+        [HttpDelete]
+        [Route("collaborators/{email}")]
+        public async Task<IActionResult> DeleteCollaborator(string email)
+        {
+            await _userService.DeleteCollaborator(myEmail: User.FindFirst(ClaimTypes.Email).Value, deleteEmail: email);
+
+            return Ok();
+        }
     }
 }
