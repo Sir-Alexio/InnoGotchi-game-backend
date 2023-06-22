@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Principal;
 
 namespace InnoGotchi_backend.Models.Entity
 {
@@ -27,6 +28,8 @@ namespace InnoGotchi_backend.Models.Entity
         public string? Nose { get; set; }
         [Required]
         public int FarmId { get; set; }
+        public virtual ICollection<PetFeeding>? Feedings { get; set; }
+        public virtual ICollection<PetDrinking>? Drinkings { get; set; }
         public virtual Farm Farm { get; set; }
 
     }

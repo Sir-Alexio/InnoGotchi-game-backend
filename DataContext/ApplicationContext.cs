@@ -15,7 +15,6 @@ namespace InnoGotchi_backend.DataContext
         }
         public ApplicationContext()
         {
-            //Database.EnsureDeleted();
             Database.EnsureCreated();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -39,6 +38,16 @@ namespace InnoGotchi_backend.DataContext
                 .HasMany(s => s.MyColaborators)
                 .WithMany(c => c.IAmColaborator)
                 .UsingEntity(j => j.ToTable("UserColab"));
+
+            model.Entity<PetFeeding>()
+                .HasOne(o => o.MyPet)
+                .WithMany(e => e.Feedings)
+                .HasForeignKey(j => j.PetId);
+
+            model.Entity<PetDrinking>()
+                .HasOne(o => o.MyPet)
+                .WithMany(m => m.Drinkings)
+                .HasForeignKey(fk => fk.PetId);
         }
     }
 }
