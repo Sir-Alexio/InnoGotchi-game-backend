@@ -6,6 +6,7 @@ using System.Security.Claims;
 using AutoMapper;
 using System.Text.Json;
 using InnoGotchi_backend.Models.Entity;
+using InnoGotchi_backend.Services;
 
 namespace InnoGotchi_backend.Controllers
 {
@@ -134,6 +135,18 @@ namespace InnoGotchi_backend.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("pets")]
+        public async Task<IActionResult> GetAllInnogotches()
+        {
+            List<Pet> pets = await _petService.GetAllInnogotches();
+
+            List<PetDto> dto = _mapper.Map<List<PetDto>>(pets);
+
+            return Ok(JsonSerializer.Serialize(dto));
         }
     }
 }

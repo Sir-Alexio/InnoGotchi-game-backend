@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using InnoGotchi_backend.Models;
+using InnoGotchi_backend.Models.DTOs;
 using InnoGotchi_backend.Models.Entity;
 using InnoGotchi_backend.Models.Enums;
 using InnoGotchi_backend.Repositories.Abstract;
@@ -19,6 +20,36 @@ namespace InnoGotchi_backend.Services
             _farmSevice = farmService;
             _mapper = mapper;
         }
+
+        public async Task<List<Pet>> GetAllInnogotches()
+        {
+            List<Pet> pets = new List<Pet>();
+
+            //Get current farm with user 
+
+            pets = await _repository.Pet.GetAll(trackChanges: false).Result.ToListAsync();
+
+            return pets;
+        }
+        private async Task CalculateHappyDaysCount(List<Pet> pets)
+        {
+            foreach (Pet pet in pets)
+            {
+                if (DateTime.Now.Subtract(pet.LastHappyDaysCountUpdated).Days < 1) { continue; }
+
+                if (DateTime.Now.Subtract(pet.LastHungerLevel).Days>=2 && DateTime.Now.Subtract(pet.LastThirstyLevel).Days >= 2) { continue; }
+
+                pet.LastHappyDaysCountUpdated = DateTime.Now;
+
+                pet.HappyDaysCount += 1;
+
+                await _repository.Pet.Update(pet);
+            }
+
+            await _repository.Save();
+        }
+
+
         public async Task<Pet> GetCurrentPet(string petName)
         {
             //Get current pet by name
@@ -73,6 +104,8 @@ namespace InnoGotchi_backend.Services
 
             pets = await _repository.Pet.GetByCondition(x=>x.FarmId == farm.FarmId,false).Result.ToListAsync();
 
+            await CalculateHappyDaysCount(pets);
+
             return pets;
         }
 
@@ -90,6 +123,8 @@ namespace InnoGotchi_backend.Services
             }
 
             pets = await _repository.Pet.GetByCondition(x => x.FarmId == farm.FarmId, false).Result.ToListAsync();
+
+            await CalculateHappyDaysCount(pets);
 
             return pets;
         }

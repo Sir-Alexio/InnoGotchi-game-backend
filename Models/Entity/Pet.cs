@@ -20,7 +20,7 @@ namespace InnoGotchi_backend.Models.Entity
         public DateTime LastThirstyLevel { get; set; }
         [Required]
         public int HappyDaysCount { get; set; } = 0;
-        public DateTime? LastHappyDaysCountUpdated { get; set; }
+        public DateTime LastHappyDaysCountUpdated { get; set; } = DateTime.Now;
         public string? Body { get; set; }
         public string? Eyes { get; set; }
         public string? Mouth { get; set; }
