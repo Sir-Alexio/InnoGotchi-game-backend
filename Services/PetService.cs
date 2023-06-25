@@ -33,12 +33,16 @@ namespace InnoGotchi_backend.Services
         }
         private async Task CalculateHappyDaysCount(List<Pet> pets)
         {
+            //For each pet in list we calculate happy days count
             foreach (Pet pet in pets)
             {
+                //Check if we already calculate happy days count today
                 if (DateTime.Now.Subtract(pet.LastHappyDaysCountUpdated).Days < 1) { continue; }
 
+                //Check if pet alive
                 if (DateTime.Now.Subtract(pet.LastHungerLevel).Days >= 2 && DateTime.Now.Subtract(pet.LastThirstyLevel).Days >= 2) { continue; }
 
+                //Update last happe days count updated value
                 pet.LastHappyDaysCountUpdated = DateTime.Now;
 
                 pet.HappyDaysCount += 1;
@@ -102,7 +106,7 @@ namespace InnoGotchi_backend.Services
                 throw new CustomExeption(message: "Farm does not exist") { StatusCode = StatusCode.DoesNotExist };
             }
 
-            pets = await _repository.Pet.GetByCondition(x => x.FarmId == farm.FarmId, false).Result.ToListAsync();
+            pets = await _repository.Pet.GetAllPetsForFarmStatistic(farm.FarmId);
 
             await CalculateHappyDaysCount(pets);
 
@@ -173,6 +177,7 @@ namespace InnoGotchi_backend.Services
             return true;
         }
 
+        //Each feed store in datadase
         private async Task SaveFeedInformation(Pet pet)
         {
             PetFeeding petFeeding = new PetFeeding();
@@ -184,6 +189,7 @@ namespace InnoGotchi_backend.Services
             await _repository.PetFeeding.Create(petFeeding);
         }
 
+        //Each drink store in datadase
         private async Task SaveDrinkInformation(Pet pet)
         {
             PetDrinking petDrinking = new PetDrinking();

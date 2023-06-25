@@ -159,6 +159,7 @@ namespace InnoGotchi_backend.Services
 
         public async Task<User> GetUser(string email)
         {
+            //Get user with colaborators property
             User? user = await _repository.User.GetUserWithColaboratorsAsync(email);
 
             if (user == null)
@@ -171,6 +172,7 @@ namespace InnoGotchi_backend.Services
 
         public async Task<List<User>> GetCollaborators(string email)
         {
+            //Get collaborators by user email
             User? user = await _repository.User.GetUserWithColaboratorsAsync(email);
 
             if (user.MyColaborators == null)
@@ -183,6 +185,7 @@ namespace InnoGotchi_backend.Services
 
         public async Task<List<User>> GetUsersIAmCollab(string email)
         {
+            //Get user with IAmColaborator property
             User? user = await _repository.User.GetUserWithIAmCollaborator(email);
 
             if (user.IAmColaborator == null)

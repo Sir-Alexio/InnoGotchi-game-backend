@@ -83,42 +83,7 @@ namespace InnoGotchi_backend.Controllers
         [Route("statistic")]
         public async Task<IActionResult> GetFarmStatistic()
         {
-            StatisticDto statistic = new StatisticDto();
-
-            List<Pet> pets = await _petService.GetAllPets(User.FindFirst(ClaimTypes.Email)?.Value);
-
-            statistic.AlivePetCount = pets.Count(x => DateTime.Now.Subtract(x.LastHungerLevel).Days <= 2 && DateTime.Now.Subtract(x.LastThirstyLevel).Days <= 2);
-            statistic.DeadPetCount = pets.Count(x => DateTime.Now.Subtract(x.LastHungerLevel).Days > 2 || DateTime.Now.Subtract(x.LastThirstyLevel).Days > 2);
-
-            foreach (Pet pet  in pets)
-            {
-                int totalFeedDays = 0;
-                int totalDrinkDays = 0;
-
-                List<PetFeeding> feedings = pet.Feedings.ToList();
-                List<PetDrinking> drinking = pet.Drinkings.ToList();
-
-                for (int i = 0; i < feedings.Count; i++)
-                {
-                    if (i == feedings.Count-1)
-                    {
-                        break;
-                    }
-
-                    totalFeedDays += (int)feedings[i + 1].FeedDate.Subtract(feedings[i].FeedDate).TotalDays;
-                }
-
-                for (int i = 0; i < drinking.Count; i++)
-                {
-                    if (i == drinking.Count - 1)
-                    {
-                        break;
-                    }
-
-                    totalDrinkDays += (int)drinking[i + 1].DrinkDate.Subtract(drinking[i].DrinkDate).TotalDays;
-                }
-            }
-            //To do farm statistic
+            StatisticDto statistic = await _farmService.GetFarmStatisticByEmail(User.FindFirst(ClaimTypes.Email)?.Value);
 
             return Ok(JsonSerializer.Serialize(statistic));
 
