@@ -55,6 +55,7 @@ namespace InnoGotchi_backend.Controllers
         [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordModel changePassword)
         {
+            //Get email from claims
             string email = User.FindFirst(ClaimTypes.Email).Value;
 
             bool isPasswordChanged = await _userService.ChangePassword(changePassword, email);

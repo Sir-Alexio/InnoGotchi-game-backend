@@ -83,7 +83,9 @@ namespace InnoGotchi_backend.Controllers
         [Route("statistic")]
         public async Task<IActionResult> GetFarmStatistic()
         {
-            StatisticDto statistic = await _farmService.GetFarmStatisticByEmail(User.FindFirst(ClaimTypes.Email)?.Value);
+            List<Pet> pets = await _petService.GetAllPets(User.FindFirst(ClaimTypes.Email)?.Value);
+
+            StatisticDto statistic = await _farmService.GetFarmStatisticByEmail(pets);
 
             return Ok(JsonSerializer.Serialize(statistic));
 

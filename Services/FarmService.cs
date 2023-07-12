@@ -13,11 +13,9 @@ namespace InnoGotchi_backend.Services
     public class FarmService:IFarmService
     {
         private readonly IRepositoryManager _repository;
-        private readonly IPetService _petService;
-        public FarmService(IRepositoryManager repository, IPetService petService)
+        public FarmService(IRepositoryManager repository)
         {
             _repository = repository;
-            _petService = petService;
         }
 
         public async Task<bool> CreateFarm(FarmDto farmDto, string email)
@@ -53,13 +51,10 @@ namespace InnoGotchi_backend.Services
             return true;
         }
 
-        public async Task<StatisticDto> GetFarmStatisticByEmail(string email)
+        public async Task<StatisticDto> GetFarmStatisticByEmail(List<Pet> pets)
         {
             //Create new statistic
             StatisticDto statistic = new StatisticDto();
-
-            //Get pets by email
-            List<Pet> pets = await _petService.GetAllPets(email);
 
             //If pets count zero - return empty statistics
             if (pets.Count == 0)
@@ -91,30 +86,30 @@ namespace InnoGotchi_backend.Services
                 totalPetsAge += DateTime.Now.Subtract(pet.AgeDate).Days / 7;
                 totalHappyDaysCount += pet.HappyDaysCount;
 
-                if (feedings.Count == 0 || drinkings.Count == 0)
+                if (feedings.Count == 0 || drinkings.Count == 0|| feedings.Count == 1 || drinkings.Count == 1)
                 {
                     continue;
                 }
 
-                for (int i = 0; i < feedings.Count; i++)
+                for (int i = 0; i < feedings.Count-1; i++)
                 {
                     //Because value calculating between two lines in database
-                    if (i == feedings.Count - 1)
-                    {
-                        break;
-                    }
+                    //if (i == feedings.Count - 1)
+                    //{
+                    //    break;
+                    //}
 
                     totalFeedDays += (int)feedings[i + 1].FeedDate.Subtract(feedings[i].FeedDate).TotalDays;
                 }
 
                 totalFeedDaysForPets += totalFeedDays / (feedings.Count - 1);
 
-                for (int i = 0; i < drinkings.Count; i++)
+                for (int i = 0; i < drinkings.Count-1; i++)
                 {
-                    if (i == drinkings.Count - 1)
-                    {
-                        break;
-                    }
+                    //if (i == drinkings.Count - 1)
+                    //{
+                    //    break;
+                    //}
 
                     totalDrinkDays += (int)drinkings[i + 1].DrinkDate.Subtract(drinkings[i].DrinkDate).TotalDays;
                 }

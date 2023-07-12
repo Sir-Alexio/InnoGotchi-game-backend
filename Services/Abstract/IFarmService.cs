@@ -10,7 +10,7 @@ namespace InnoGotchi_backend.Services.Abstract
         public Task<Farm> GetFarm(string email);
         public Task<bool> UpdateFarm(Farm farm);
         public Task<Farm> GetFarmByName(string farmName);
-        public Task<StatisticDto> GetFarmStatisticByEmail(string email)
+        public Task<StatisticDto> GetFarmStatisticByEmail(List<Pet> pets);
 
     }
 }
