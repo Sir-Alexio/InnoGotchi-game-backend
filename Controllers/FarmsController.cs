@@ -85,7 +85,7 @@ namespace InnoGotchi_backend.Controllers
         {
             List<Pet> pets = await _petService.GetAllPets(User.FindFirst(ClaimTypes.Email)?.Value);
 
-            StatisticDto statistic = await _farmService.GetFarmStatisticByEmail(pets);
+            StatisticDto statistic = await _farmService.GetFarmStatistic(pets);
 
             return Ok(JsonSerializer.Serialize(statistic));
 

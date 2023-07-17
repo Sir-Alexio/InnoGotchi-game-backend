@@ -51,7 +51,7 @@ namespace InnoGotchi_backend.Services
             return true;
         }
 
-        public async Task<StatisticDto> GetFarmStatisticByEmail(List<Pet> pets)
+        public async Task<StatisticDto> GetFarmStatistic(List<Pet> pets)
         {
             //Create new statistic
             StatisticDto statistic = new StatisticDto();
