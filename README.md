@@ -83,7 +83,7 @@ public class RepositoryManager : IRepositoryManager
     }
 ```
 
-What's more I have Service layer for bisness logic of application. Here you can find some method for working with repository:
+What's more I have Service layer for business logic of application. Here you can find some method for working with repository:
 ```csharp
 public async Task<Farm> GetFarm(string email)
         {
@@ -100,7 +100,7 @@ public async Task<Farm> GetFarm(string email)
             return farm;
         }
  ```
- For Presentation leyer I have controllers, that handle incoming requests and send responses:
+ For Presentation layer I have controllers, that handle incoming requests and send responses:
  ```csharp
     [Route("api/user")]
     [ApiController]
@@ -133,7 +133,7 @@ public async Task<Farm> GetFarm(string email)
 ```
 For all dependences I used DI Container that create only one instance of any dependency. 
 
-After completing all bisness requrements I used Swagger for testing endpoints and write some unit test for bisness logic:
+After completing all bisness requrements I used Swagger for testing endpoints and write some unit test using Moq and xUnit for bisness logic:
 ```csharp
     public class UserServiceTests
     {
@@ -164,3 +164,7 @@ After completing all bisness requrements I used Swagger for testing endpoints an
 ```
 
 For more test your can visit my another github repository: https://github.com/Sir-Alexio/Innogotchi-tests
+
+## Conclusion
+
+So, it was a small description of backend side of my application. Note, that I just make my first steps in softwere development and I hope you have enjoyed this small trip. :) Feel free for advice me to make my code better. Thanks for reading me!
