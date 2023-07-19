@@ -9,10 +9,15 @@ using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 using InnoGotchi_backend.Services;
 using InnoGotchi_backend.Extensions;
+using NLog;
+using InnoGotchi_backend.Services.LoggerService.Abstract;
+using InnoGotchi_backend.Services.LoggerService;
 
 var builder = WebApplication.CreateBuilder(args);
 
+LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
 // Add services to the container.
+builder.Services.AddScoped<ILoggerManager, LoggerManager>();
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 
 builder.Services.AddScoped<IUserService, UserService>();
@@ -24,6 +29,7 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -72,6 +78,8 @@ builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServe
     ));
 
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

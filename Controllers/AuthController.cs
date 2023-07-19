@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using InnoGotchi_backend.Models.Dto;
 using InnoGotchi_backend.Models.Entity;
+using InnoGotchi_backend.Services.LoggerService.Abstract;
 
 namespace InnoGotchi_backend.Controllers
 {
@@ -15,14 +16,16 @@ namespace InnoGotchi_backend.Controllers
     {
         private readonly IAuthenticationService _authorizationService;
         private readonly IUserService _userService;
+        private readonly ILoggerManager _logger;
 
         
         private readonly IMapper _mapper;
-        public AuthController(IAuthenticationService authorizationService,IMapper mapper, IUserService userService)
+        public AuthController(IAuthenticationService authorizationService,IMapper mapper, IUserService userService,ILoggerManager logger)
         {
             _authorizationService = authorizationService;
             _mapper = mapper;
             _userService = userService;
+            _logger = logger;
         }
 
         [HttpPost("login")]   
@@ -33,6 +36,7 @@ namespace InnoGotchi_backend.Controllers
             //user validation
             if (!isUserValid)
             {
+                _logger.LogInfo($"Wrong password. User email = {dto.Email}, wrong password = {dto.Password}");
                 return Unauthorized("Wrong password");
             }
 
@@ -61,7 +65,7 @@ namespace InnoGotchi_backend.Controllers
             //check if old refresh token is valid
             if (!currentUser.RefreshToken.Equals(refreshToken))
             {
-                //return Unauthorized("invalid refresh token");
+                return Unauthorized("invalid refresh token");
             }
             else if (currentUser.TokenExpires < DateTime.Now)
             {
