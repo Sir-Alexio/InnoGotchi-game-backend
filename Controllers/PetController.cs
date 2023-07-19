@@ -6,6 +6,7 @@ using System.Security.Claims;
 using AutoMapper;
 using System.Text.Json;
 using InnoGotchi_backend.Models.Entity;
+using InnoGotchi_backend.Services.LoggerService.Abstract;
 
 namespace InnoGotchi_backend.Controllers
 {
@@ -16,12 +17,13 @@ namespace InnoGotchi_backend.Controllers
         private readonly IPetService _petService;
         private readonly IFarmService _farmService;
         private readonly IMapper _mapper;
-        public PetController(IPetService petService, IFarmService farmService, IMapper mapper)
+        private readonly ILoggerManager _logger;
+        public PetController(IPetService petService, IFarmService farmService, IMapper mapper, ILoggerManager logger)
         {
             _petService = petService;
             _farmService = farmService;
             _mapper = mapper;
-
+            _logger = logger;
         }
 
         [HttpGet]
@@ -33,6 +35,7 @@ namespace InnoGotchi_backend.Controllers
 
             if (pet == null)
             {
+                _logger.LogInfo($"Can not find pet with name: {petName}");
                 return BadRequest("Can not find pet");
             }
 
@@ -90,6 +93,7 @@ namespace InnoGotchi_backend.Controllers
 
             if (!isPetCreated)
             {
+                _logger.LogInfo($"Can not create pet. This pet name: {pet.PetName}");
                 return BadRequest("This pet name is already exist");
             }
 
@@ -100,6 +104,7 @@ namespace InnoGotchi_backend.Controllers
 
             if (!isFarmUpdated)
             {
+                _logger.LogInfo($"Can not update farm. Farm name: {currentFarm.FarmName}");
                 return BadRequest("Can not update farm");
             }
 
@@ -115,6 +120,7 @@ namespace InnoGotchi_backend.Controllers
 
             if (!isPetFed)
             {
+                _logger.LogInfo($"Can not Feed pet with name: {dto.PetName}");
                 return BadRequest("Can not feed pet");
             }
 
@@ -130,6 +136,7 @@ namespace InnoGotchi_backend.Controllers
             
             if (!isPetDrunk)
             {
+                _logger.LogInfo($"Can not give a drink to pet with name: {dto.PetName}");
                 return BadRequest("Can not give a drink to pet");
             }
 

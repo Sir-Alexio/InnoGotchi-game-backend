@@ -1,6 +1,7 @@
 ﻿using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Models.Entity;
 using InnoGotchi_backend.Repositories.Abstract;
+using InnoGotchi_backend.Services.LoggerService.Abstract;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -14,12 +15,14 @@ namespace InnoGotchi_backend.Services
     {
         private readonly IRepositoryManager _repository;
         private readonly IConfiguration _configuration;
+        private readonly ILoggerManager _logger;
 
         private static User? _user;
-        public AuthenticationService(IRepositoryManager repository, IConfiguration configuration)
+        public AuthenticationService(IRepositoryManager repository, IConfiguration configuration, ILoggerManager logger)
         {
             _repository = repository;
             _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task<string> CreateToken()
@@ -36,6 +39,7 @@ namespace InnoGotchi_backend.Services
 
             if (_user == null)
             {
+                _logger.LogError($"No user found with email: {email} in authentification service");
                 throw new CustomExeption(message: "No user found") { StatusCode = Models.Enums.StatusCode.DoesNotExist };
             }
 

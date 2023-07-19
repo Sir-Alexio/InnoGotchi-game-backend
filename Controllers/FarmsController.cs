@@ -3,6 +3,7 @@ using InnoGotchi_backend.Models.Dto;
 using InnoGotchi_backend.Models.DTOs;
 using InnoGotchi_backend.Models.Entity;
 using InnoGotchi_backend.Services.Abstract;
+using InnoGotchi_backend.Services.LoggerService.Abstract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -18,13 +19,15 @@ namespace InnoGotchi_backend.Controllers
         private readonly IUserService _userService;
         private readonly IPetService _petService;
         private readonly IMapper _mapper;
+        private readonly ILoggerManager _logger;
 
-        public FarmsController(IFarmService farmService,IMapper mapper, IUserService userService, IPetService petService)
+        public FarmsController(IFarmService farmService,IMapper mapper, IUserService userService, IPetService petService,ILoggerManager loger)
         {
             _farmService = farmService;
             _mapper = mapper;
             _userService = userService;
             _petService = petService;
+            _logger = loger;
         }
 
         [HttpPost("new-farm")]
@@ -35,6 +38,7 @@ namespace InnoGotchi_backend.Controllers
 
             if (!isFarmCreated)
             {
+                _logger.LogInfo($"Can not create farm. Farm with name {farmDto.FarmName} exist.")
                 return BadRequest("This farm name is already exist");
             }
 

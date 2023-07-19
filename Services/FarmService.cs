@@ -1,21 +1,22 @@
 ﻿using InnoGotchi_backend.Models.Dto;
-using InnoGotchi_backend.Models;
 using InnoGotchi_backend.Repositories.Abstract;
 using InnoGotchi_backend.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 using InnoGotchi_backend.Services.Abstract;
 using InnoGotchi_backend.Models.Entity;
 using InnoGotchi_backend.Models.DTOs;
-using System.Security.Claims;
+using InnoGotchi_backend.Services.LoggerService.Abstract;
 
 namespace InnoGotchi_backend.Services
 {
     public class FarmService:IFarmService
     {
         private readonly IRepositoryManager _repository;
-        public FarmService(IRepositoryManager repository)
+        private readonly ILoggerManager _logger;
+        public FarmService(IRepositoryManager repository, ILoggerManager logger)
         {
             _repository = repository;
+            _logger = logger;
         }
 
         public async Task<bool> CreateFarm(FarmDto farmDto, string email)
@@ -25,6 +26,7 @@ namespace InnoGotchi_backend.Services
 
             if (curentUser == null)
             {
+                _logger.LogError($"No user found with email: {email} in farm service.");
                 throw new CustomExeption(message: "User does not exist") { StatusCode = StatusCode.DoesNotExist };
             }
             
@@ -45,6 +47,7 @@ namespace InnoGotchi_backend.Services
             }
             catch (DbUpdateException)
             {
+                _logger.LogError("Can not update database. Update of save method in farm service.");
                 throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
 
@@ -125,6 +128,7 @@ namespace InnoGotchi_backend.Services
 
             if (farm == null)
             {
+                _logger.LogError($"No farm found with farm name: {farm.FarmName} in farm service.");
                 throw new CustomExeption(message: "Farm does not exist") { StatusCode = StatusCode.DoesNotExist };
             }
 
@@ -154,6 +158,7 @@ namespace InnoGotchi_backend.Services
             }
             catch (DbUpdateException)
             {
+                _logger.LogError("Can not update database. Save method in farm service.");
                 throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
 

@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using InnoGotchi_backend.Models;
-using InnoGotchi_backend.Models.DTOs;
 using InnoGotchi_backend.Models.Entity;
 using InnoGotchi_backend.Models.Enums;
 using InnoGotchi_backend.Repositories.Abstract;
