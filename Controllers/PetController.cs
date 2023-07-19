@@ -6,7 +6,6 @@ using System.Security.Claims;
 using AutoMapper;
 using System.Text.Json;
 using InnoGotchi_backend.Models.Entity;
-using InnoGotchi_backend.Services;
 
 namespace InnoGotchi_backend.Controllers
 {

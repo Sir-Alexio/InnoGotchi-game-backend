@@ -83,7 +83,7 @@ public class RepositoryManager : IRepositoryManager
     }
 ```
 
-What's more I have Service layer for business logic of application. Here you can find some method for working with repository:
+What's more I have Service layer for business logic of application. Here you can find some methods for working with repository:
 ```csharp
 public async Task<Farm> GetFarm(string email)
         {
@@ -133,7 +133,7 @@ public async Task<Farm> GetFarm(string email)
 ```
 For all dependences I used DI Container that create only one instance of any dependency. 
 
-After completing all bisness requrements I used Swagger for testing endpoints and write some unit test using Moq and xUnit for bisness logic:
+After completing all business requirements I used Swagger for testing endpoints and wrote some unit test using Moq and xUnit for business logic:
 ```csharp
     public class UserServiceTests
     {
@@ -167,4 +167,4 @@ For more test your can visit my another github repository: https://github.com/Si
 
 ## Conclusion
 
-So, it was a small description of backend side of my application. Note, that I just make my first steps in softwere development and I hope you have enjoyed this small trip. :) Feel free for advice me to make my code better. Thanks for reading me!
+So, it was a small description of backend side of my application. Please, keep in mind, that I just make my first steps in software development and I hope you have enjoyed this small trip. :) I will be glad to receive any advice and suggestions that can make my code better. Thanks for your attention!

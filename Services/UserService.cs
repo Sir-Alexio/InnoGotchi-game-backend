@@ -26,7 +26,7 @@ namespace InnoGotchi_backend.Services
         public async Task<List<User>> GetUsersWithNoInvited(string email)
         {
             //Get from data base all users
-            List<User> allUsersWithNoInvited =  await _repository.User.GetAll(trackChanges: false).Result.ToListAsync();
+            List<User> allUsersWithNoInvited =  (await _repository.User.GetAll(trackChanges: false)).ToList();
 
             //Get from data base current user
             User? currentUser = await _repository.User.GetUserWithColaboratorsAsync(email);
@@ -51,7 +51,7 @@ namespace InnoGotchi_backend.Services
         public async Task<List<User>> GetAll()
         {
             //Get all users from the database
-            List<User> users = await _repository.User.GetAll(trackChanges:true).Result.ToListAsync();
+            List<User> users = (await _repository.User.GetAll(trackChanges:true)).ToList();
 
             if (users == null)
             {

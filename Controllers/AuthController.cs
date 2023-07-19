@@ -1,4 +1,4 @@
-﻿    using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using InnoGotchi_backend.Services.Abstract;
 using System.Text.Json;

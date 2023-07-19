@@ -27,7 +27,7 @@ namespace InnoGotchi_backend.Services
 
             //Get current farm with user 
 
-            pets = await _repository.Pet.GetAll(trackChanges: false).Result.ToListAsync();
+            pets = (await _repository.Pet.GetAll(trackChanges: false)).ToList();
 
             return pets;
         }
@@ -57,7 +57,7 @@ namespace InnoGotchi_backend.Services
         public async Task<Pet> GetCurrentPet(string petName)
         {
             //Get current pet by name
-            Pet? pet = await _repository.Pet.GetByCondition(x => x.PetName == petName, false).Result.FirstOrDefaultAsync();
+            Pet? pet = (await _repository.Pet.GetByCondition(x => x.PetName == petName, false)).FirstOrDefault();
 
             if (pet == null)
             {
@@ -74,7 +74,7 @@ namespace InnoGotchi_backend.Services
             }
 
             //Check if we already have pet with this name
-            if (await _repository.Pet.GetByCondition(x => x.PetName == pet.PetName, false).Result.FirstOrDefaultAsync() != null)
+            if ((await _repository.Pet.GetByCondition(x => x.PetName == pet.PetName, false)).FirstOrDefault() != null)
             {
                 return false;
             }
@@ -126,7 +126,7 @@ namespace InnoGotchi_backend.Services
                 throw new CustomExeption(message: "Farm does not exist") { StatusCode = StatusCode.DoesNotExist };
             }
 
-            pets = await _repository.Pet.GetByCondition(x => x.FarmId == farm.FarmId, false).Result.ToListAsync();
+            pets = (await _repository.Pet.GetByCondition(x => x.FarmId == farm.FarmId, false)).ToList();
 
             await CalculateHappyDaysCount(pets);
 
@@ -136,7 +136,7 @@ namespace InnoGotchi_backend.Services
         public async Task<bool> FeedPet(string petName)
         {
             //Get pet by name
-            Pet pet = await _repository.Pet.GetByCondition(x => x.PetName == petName, true).Result.FirstAsync();
+            Pet pet = (await _repository.Pet.GetByCondition(x => x.PetName == petName, true)).First();
 
             //Set hunger level to DateTime now
             pet.LastHungerLevel = DateTime.Now;
@@ -157,7 +157,7 @@ namespace InnoGotchi_backend.Services
 
         public async Task<bool> GiveDrinkToPet(string petName)
         {
-            Pet pet = await _repository.Pet.GetByCondition(x => x.PetName == petName, true).Result.FirstAsync();
+            Pet pet = (await _repository.Pet.GetByCondition(x => x.PetName == petName, true)).First();
 
             //Set Thirsty level to current time
             pet.LastThirstyLevel = DateTime.Now;

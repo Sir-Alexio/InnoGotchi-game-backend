@@ -29,7 +29,7 @@ namespace InnoGotchi_backend.Services
             }
             
             //Check if we already have farm with this name
-            if (await _repository.Farm.GetByCondition(x=> x.FarmName == farmDto.FarmName,false).Result.FirstOrDefaultAsync() != null)
+            if ((await _repository.Farm.GetByCondition(x=> x.FarmName == farmDto.FarmName,false)).FirstOrDefault() != null)
             {
                 return false;
             }
@@ -93,11 +93,6 @@ namespace InnoGotchi_backend.Services
 
                 for (int i = 0; i < feedings.Count-1; i++)
                 {
-                    //Because value calculating between two lines in database
-                    //if (i == feedings.Count - 1)
-                    //{
-                    //    break;
-                    //}
 
                     totalFeedDays += (int)feedings[i + 1].FeedDate.Subtract(feedings[i].FeedDate).TotalDays;
                 }
@@ -106,10 +101,6 @@ namespace InnoGotchi_backend.Services
 
                 for (int i = 0; i < drinkings.Count-1; i++)
                 {
-                    //if (i == drinkings.Count - 1)
-                    //{
-                    //    break;
-                    //}
 
                     totalDrinkDays += (int)drinkings[i + 1].DrinkDate.Subtract(drinkings[i].DrinkDate).TotalDays;
                 }
@@ -130,7 +121,7 @@ namespace InnoGotchi_backend.Services
             //Get current user for getting current farm
             User? curentUser = await _repository.User.GetUserByEmail(email);
 
-            Farm? farm = await _repository.Farm.GetByCondition(x => x.UserId == curentUser.UserId, false).Result.FirstOrDefaultAsync();
+            Farm? farm = (await _repository.Farm.GetByCondition(x => x.UserId == curentUser.UserId, false)).FirstOrDefault();
 
             if (farm == null)
             {
@@ -143,7 +134,7 @@ namespace InnoGotchi_backend.Services
         public async Task<Farm> GetFarmByName(string farmName)
         {
             //Get farm by farm Name
-            Farm? farm = await _repository.Farm.GetByCondition(x => x.FarmName==farmName, false).Result.FirstOrDefaultAsync();
+            Farm? farm = (await _repository.Farm.GetByCondition(x => x.FarmName==farmName, false)).FirstOrDefault();
 
             if (farm == null)
             {
