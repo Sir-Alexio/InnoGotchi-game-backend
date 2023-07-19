@@ -48,7 +48,7 @@ namespace InnoGotchi_backend.Controllers
 
             if (!isUserRegistrated)
             {
-                _logger.LogInfo($"Can not registrate user. User with email: {userDto.Email} is already exist.")
+                _logger.LogInfo($"Can not registrate user. User with email: {userDto.Email} is already exist.");
                 return BadRequest("This email is alredy exist");
             }
 
@@ -67,7 +67,7 @@ namespace InnoGotchi_backend.Controllers
 
             if (!isPasswordChanged)
             {
-                _logger.Equals("Can not change password. Old passwort is incorrect.")
+                _logger.Equals("Can not change password. Old passwort is incorrect.");
                 return Unauthorized("Password was incorrect");
             }
 
