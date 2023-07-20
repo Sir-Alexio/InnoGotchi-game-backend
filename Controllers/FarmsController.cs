@@ -38,7 +38,7 @@ namespace InnoGotchi_backend.Controllers
 
             if (!isFarmCreated)
             {
-                _logger.LogInfo($"Can not create farm. Farm with name {farmDto.FarmName} exist.")
+                _logger.LogInfo($"Can not create farm. Farm with name {farmDto.FarmName} exist.");
                 return BadRequest("This farm name is already exist");
             }
 
