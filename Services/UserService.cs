@@ -5,6 +5,7 @@ using InnoGotchi_backend.Models.Entity;
 using InnoGotchi_backend.Models.Enums;
 using InnoGotchi_backend.Repositories.Abstract;
 using InnoGotchi_backend.Services.Abstract;
+using InnoGotchi_backend.Services.LoggerService.Abstract;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
@@ -16,11 +17,13 @@ namespace InnoGotchi_backend.Services
         private readonly IRepositoryManager _repository;
         private readonly IAuthenticationService _authentication;
         private readonly IMapper _mapper;
-        public UserService(IRepositoryManager repository, IAuthenticationService authentication, IMapper mapper)
+        private readonly ILoggerManager _logger;
+        public UserService(IRepositoryManager repository, IAuthenticationService authentication, IMapper mapper, ILoggerManager logger)
         {
             _repository = repository;
             _authentication = authentication;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<List<User>> GetUsersWithNoInvited(string email)
@@ -34,6 +37,7 @@ namespace InnoGotchi_backend.Services
             //Check current user
             if (currentUser == null)
             {
+                _logger.LogInfo($"No user found with email: {email}");
                 throw new CustomExeption(message: "No user found") { StatusCode = StatusCode.DoesNotExist };
             }
 
@@ -55,6 +59,7 @@ namespace InnoGotchi_backend.Services
 
             if (users == null)
             {
+                _logger.LogInfo($"No users found in the database.");
                 throw new CustomExeption(message: "No users found") { StatusCode = StatusCode.DoesNotExist };
             }
 
@@ -88,6 +93,7 @@ namespace InnoGotchi_backend.Services
             }
             catch (DbUpdateException)
             {
+                _logger.LogError("Can not update database. Save method in user service.");
                 throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
 
@@ -125,6 +131,7 @@ namespace InnoGotchi_backend.Services
             }
             catch (DbUpdateException)
             {
+                _logger.LogError("Can not update database. Save method in user service.");
                 throw new CustomExeption(message:"Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
 
@@ -151,6 +158,7 @@ namespace InnoGotchi_backend.Services
             }
             catch (DbUpdateException)
             {
+                _logger.LogError("Can not update database. Save method in user service.");
                 throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
 
@@ -164,6 +172,7 @@ namespace InnoGotchi_backend.Services
 
             if (user == null)
             {
+                _logger.LogInfo($"No user found with email: {email}");
                 throw new CustomExeption(message: "No user found") { StatusCode = StatusCode.DoesNotExist };
             }
 
@@ -204,6 +213,7 @@ namespace InnoGotchi_backend.Services
 
             if (!user.MyColaborators.Contains(deleteUser))
             {
+                _logger.LogInfo($"No collaborators found with email: {deleteEmail}");
                 throw new CustomExeption(message:$"No collaborator with name {deleteEmail}.") { StatusCode = StatusCode.DoesNotExist };
             }
 
@@ -216,6 +226,7 @@ namespace InnoGotchi_backend.Services
             }
             catch (DbUpdateException)
             {
+                _logger.LogError("Can not update database. Save method in user service.");
                 throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
         }
@@ -236,6 +247,7 @@ namespace InnoGotchi_backend.Services
             }
             catch (DbUpdateException)
             {
+                _logger.LogError("Can not update database. Save method in user service.");
                 throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
         }
@@ -263,6 +275,7 @@ namespace InnoGotchi_backend.Services
             }
             catch (DbUpdateException)
             {
+                _logger.LogError("Can not update database. Save method in user service.");
                 throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
         }

@@ -3,6 +3,7 @@ using InnoGotchi_backend.Models.Entity;
 using InnoGotchi_backend.Models.Enums;
 using InnoGotchi_backend.Repositories.Abstract;
 using InnoGotchi_backend.Services.Abstract;
+using InnoGotchi_backend.Services.LoggerService.Abstract;
 using Microsoft.EntityFrameworkCore;
 
 namespace InnoGotchi_backend.Services
@@ -12,11 +13,13 @@ namespace InnoGotchi_backend.Services
         private readonly IRepositoryManager _repository;
         private readonly IFarmService _farmSevice;
         private readonly IMapper _mapper;
-        public PetService(IRepositoryManager repository, IFarmService farmService, IMapper mapper)
+        private readonly ILoggerManager _logger;
+        public PetService(IRepositoryManager repository, IFarmService farmService, IMapper mapper, ILoggerManager logger)
         {
             _repository = repository;
             _farmSevice = farmService;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<List<Pet>> GetAllInnogotches()
@@ -59,6 +62,7 @@ namespace InnoGotchi_backend.Services
 
             if (pet == null)
             {
+                _logger.LogInfo($"Pet with name: {petName} does not exist.");
                 throw new CustomExeption(message: "Pet does not exist") { StatusCode = StatusCode.DoesNotExist };
             }
 
@@ -68,6 +72,7 @@ namespace InnoGotchi_backend.Services
         {
             if (pet == null)
             {
+                _logger.LogInfo($"Pet does not exist. No instrance of pet in createPet method.");
                 throw new CustomExeption(message: "Pet does not exist") { StatusCode = StatusCode.DoesNotExist };
             }
 
@@ -85,6 +90,7 @@ namespace InnoGotchi_backend.Services
             }
             catch (DbUpdateException)
             {
+                _logger.LogError("Can not update database. Save method in pet service.");
                 throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
 
@@ -101,6 +107,7 @@ namespace InnoGotchi_backend.Services
 
             if (farm == null)
             {
+                _logger.LogInfo($"No farm found with user email:{email}");
                 throw new CustomExeption(message: "Farm does not exist") { StatusCode = StatusCode.DoesNotExist };
             }
 
@@ -121,6 +128,7 @@ namespace InnoGotchi_backend.Services
 
             if (farm == null)
             {
+                _logger.LogInfo($"No farm found with farm name:{farmName}");
                 throw new CustomExeption(message: "Farm does not exist") { StatusCode = StatusCode.DoesNotExist };
             }
 
@@ -147,6 +155,7 @@ namespace InnoGotchi_backend.Services
             }
             catch (DbUpdateException)
             {
+                _logger.LogError("Can not update database. Save method in pet service.");
                 throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
 
@@ -169,6 +178,7 @@ namespace InnoGotchi_backend.Services
             }
             catch (DbUpdateException)
             {
+                _logger.LogError("Can not update database. Save method in pet service.");
                 throw new CustomExeption(message: "Can not update database") { StatusCode = StatusCode.UpdateFailed };
             }
 
